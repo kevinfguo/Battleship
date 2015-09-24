@@ -1,4 +1,4 @@
-type Board = string[][];
+type Board = string[][][];
 interface BoardDelta {
   row: number;
   col: number;
@@ -11,10 +11,54 @@ interface IState {
 module gameLogic {
 
   /** Returns the initial TicTacToe board, which is a 3x3 matrix containing ''. */
+  // export function getInitialBoard(): Board {
+  //   return [['', '', ''],
+  //           ['', '', ''],
+  //           ['', '', '']];
+  // }
   export function getInitialBoard(): Board {
-    return [['', '', ''],
-            ['', '', ''],
-            ['', '', '']];
+    return [
+            [['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','','']],
+            [['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','','']],
+            [['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','','']],
+            [['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','','']]
+          ]
   }
 
   /**
@@ -24,18 +68,19 @@ module gameLogic {
    *      ['X', 'O', 'O'],
    *      ['O', 'X', 'X']]
    */
-  function isTie(board: Board): boolean {
-    for (var i = 0; i < 3; i++) {
-      for (var j = 0; j < 3; j++) {
-        if (board[i][j] === '') {
-          // If there is an empty cell then we do not have a tie.
-          return false;
-        }
-      }
-    }
-    // No empty cells, so we have a tie!
-    return true;
-  }
+  // There is no such thing as a "tie" in Battleship!
+  // function isTie(board: Board, turnIndexBeforeMove: number): boolean {
+  //   for (var i = 0; i < 3; i++) {
+  //     for (var j = 0; j < 3; j++) {
+  //       if (board[i][j] === '') {
+  //         // If there is an empty cell then we do not have a tie.
+  //         return false;
+  //       }
+  //     }
+  //   }
+  //   // No empty cells, so we have a tie!
+  //   return true;
+  // }
 
   /**
    * Return the winner (either 'X' or 'O') or '' if there is no winner.
@@ -44,37 +89,27 @@ module gameLogic {
    *     [['X', 'O', ''],
    *      ['X', 'O', ''],
    *      ['X', '', '']]
+   * Return the winner (either P1 or P2) or '' if there is no winner.
+   * The board is composed of 4 10x10 matrices, 2 containing either 'X' or
+   * "O", or ''. The other 2 contain locations of ships marked by 'X'.
+   * Retruns the player for which there are 'X' on all spaces of the opposing
+   * player's ships
    */
-  function getWinner(board: Board): string {
-    var boardString = '';
-    for (var i = 0; i < 3; i++) {
-      for (var j = 0; j < 3; j++) {
-        var cell = board[i][j];
-        boardString += cell === '' ? ' ' : cell;
+  function getWinner(board: Board, turnIndexBeforeMove: number): string {
+    for (var i = 0; i < 10; i++){
+      for (var j = 0; j < 10; j++) {
+        var cell1 = board[3-turnIndexBeforeMove][i][j];
+        var cell2 = board[turnIndexBeforeMove][i][j];
+        if (cell1 == 'X' && cell2 != 'X'){
+          return '';
+        }
       }
     }
-    var win_patterns = [
-      'XXX......',
-      '...XXX...',
-      '......XXX',
-      'X..X..X..',
-      '.X..X..X.',
-      '..X..X..X',
-      'X...X...X',
-      '..X.X.X..'
-    ];
-    for (i = 0; i < win_patterns.length; i++) {
-      var win_pattern = win_patterns[i];
-      var x_regexp = new RegExp(win_pattern);
-      var o_regexp = new RegExp(win_pattern.replace(/X/g, 'O'));
-      if (x_regexp.test(boardString)) {
-        return 'X';
-      }
-      if (o_regexp.test(boardString)) {
-        return 'O';
-      }
+    if (turnIndexBeforeMove === 0){
+      return "P1";
+    }else{
+      return "P2";
     }
-    return '';
   }
 
   /**
@@ -105,17 +140,17 @@ module gameLogic {
       // Initially (at the beginning of the match), the board in state is undefined.
       board = getInitialBoard();
     }
-    if (board[row][col] !== '') {
+    if (board[turnIndexBeforeMove][row][col] !== '') {
       throw new Error("One can only make a move in an empty position!");
     }
-    if (getWinner(board) !== '' || isTie(board)) {
+    if (getWinner(board,turnIndexBeforeMove) !== '') {
       throw new Error("Can only make a move if the game is not over!");
     }
     var boardAfterMove = angular.copy(board);
-    boardAfterMove[row][col] = turnIndexBeforeMove === 0 ? 'X' : 'O';
-    var winner = getWinner(boardAfterMove);
+    boardAfterMove[turnIndexBeforeMove][row][col] = turnIndexBeforeMove === 0 ? 'X' : 'O';
+    var winner = getWinner(boardAfterMove,turnIndexBeforeMove);
     var firstOperation: IOperation;
-    if (winner !== '' || isTie(boardAfterMove)) {
+    if (winner !== '') {
       // Game over.
       firstOperation = {endMatch: {endMatchScores:
         winner === 'X' ? [1, 0] : winner === 'O' ? [0, 1] : [0, 0]}};
@@ -133,7 +168,9 @@ module gameLogic {
     var move = params.move;
     var turnIndexBeforeMove = params.turnIndexBeforeMove;
     var stateBeforeMove: IState = params.stateBeforeMove;
-    // The state and turn after move are not needed in TicTacToe (or in any game where all state is public).
+    // The state and turn after move are not needed in Battleship since attacks
+    // are all logged on the player's own hit board, so all non-empty spaces
+    // are valid moves
     //var turnIndexAfterMove = params.turnIndexAfterMove;
     //var stateAfterMove = params.stateAfterMove;
 
