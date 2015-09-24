@@ -7,7 +7,7 @@ describe('TicTacToe', function() {
   }
 
   beforeEach(function() {
-    getPage('game.min.html');
+    getPage('index.min.html');
   });
 
   function getDiv(row: number, col: number) {
@@ -28,8 +28,8 @@ describe('TicTacToe', function() {
   }
 
   function expectBoard(board: Board) {
-    for (var row = 0; row < 3; row++) {
-      for (var col = 0; col < 3; col++) {
+    for (let row = 0; row < gameLogic.ROWS; row++) {
+      for (let col = 0; col < gameLogic.COLS; col++) {
         expectPiece(row, col, board[row][col]);
       }
     }
@@ -70,7 +70,7 @@ describe('TicTacToe', function() {
   });
 
   it('should end game if X wins', function () {
-    for (var col = 0; col < 3; col++) {
+    for (let col = 0; col < gameLogic.COLS; col++) {
       clickDivAndExpectPiece(1, col, "X");
       // After the game ends, player "O" click (in cell 2x2) will be ignored.
       clickDivAndExpectPiece(2, col, col === 2 ? "" : "O");
@@ -98,14 +98,14 @@ describe('TicTacToe', function() {
   });
 
   it('with playAgainstTheComputer should work', function () {
-    getPage('game.min.html?playAgainstTheComputer');
+    getPage('index.min.html?playAgainstTheComputer');
     clickDivAndExpectPiece(1, 0, "X");
     browser.sleep(2000); // wait for AI to make at least one move
     expectPiece(0, 0, 'O');
   });
 
   it('with onlyAIs should work', function () {
-    browser.get('game.min.html?onlyAIs');
+    browser.get('index.min.html?onlyAIs');
     browser.sleep(2000); // wait for AI to make at least one move
     expectPiece(0, 0, 'X');
   });

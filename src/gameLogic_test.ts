@@ -20,7 +20,7 @@ describe("In TicTacToe", function() {
   }
 
   it("placing X in 0x0 from initial state is legal", function() {
-    expectMoveOk(0, {},
+    expectMoveOk(0, <IState>{},
       [{setTurn: {turnIndex : 1}},
         {set: {key: 'board', value:
           [['X', '', ''],
@@ -128,15 +128,15 @@ describe("In TicTacToe", function() {
   });
 
   it("null move is illegal", function() {
-    expectIllegalMove(0, {}, null);
+    expectIllegalMove(0, <IState>{}, null);
   });
 
   it("move without board is illegal", function() {
-    expectIllegalMove(0, {}, [{setTurn: {turnIndex : 1}}]);
+    expectIllegalMove(0, <IState>{}, [{setTurn: {turnIndex : 1}}]);
   });
 
   it("move without delta is illegal", function() {
-    expectIllegalMove(0, {}, [{setTurn: {turnIndex : 1}},
+    expectIllegalMove(0, <IState>{}, [{setTurn: {turnIndex : 1}},
       {set: {key: 'board', value:
         [['X', '', ''],
          ['', '', ''],
@@ -144,7 +144,7 @@ describe("In TicTacToe", function() {
   });
 
   it("placing X outside the board (in 3x0) is illegal", function() {
-    expectIllegalMove(0, {}, [{setTurn: {turnIndex : 1}},
+    expectIllegalMove(0, <IState>{}, [{setTurn: {turnIndex : 1}},
       {set: {key: 'board', value:
         [['X', '', ''],
          ['', '', ''],
@@ -153,7 +153,7 @@ describe("In TicTacToe", function() {
   });
 
   it("placing X in 0x0 but setTurn to yourself is illegal", function() {
-    expectIllegalMove(0, {}, [{setTurn: {turnIndex : 0}},
+    expectIllegalMove(0, <IState>{}, [{setTurn: {turnIndex : 0}},
       {set: {key: 'board', value:
         [['X', '', ''],
          ['', '', ''],
@@ -162,7 +162,7 @@ describe("In TicTacToe", function() {
   });
 
   it("placing X in 0x0 but setting the board wrong is illegal", function() {
-    expectIllegalMove(0, {}, [{setTurn: {turnIndex : 1}},
+    expectIllegalMove(0, <IState>{}, [{setTurn: {turnIndex : 1}},
       {set: {key: 'board', value:
         [['X', 'X', ''],
          ['', '', ''],
@@ -171,12 +171,12 @@ describe("In TicTacToe", function() {
   });
 
   it("getPossibleMoves returns exactly one cell", function() {
-    var board =
+    let board =
         [['O', 'O', 'X'],
          ['X', 'X', 'O'],
          ['O', 'X', '']];
-    var possibleMoves = gameLogic.getPossibleMoves(board, 0);
-    var expectedMove = [{endMatch: {endMatchScores: [0, 0]}},
+    let possibleMoves = gameLogic.getPossibleMoves(board, 0);
+    let expectedMove = [{endMatch: {endMatchScores: [0, 0]}},
         {set: {key: 'board', value:
           [['O', 'O', 'X'],
            ['X', 'X', 'O'],
