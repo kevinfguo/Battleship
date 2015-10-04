@@ -5,6 +5,9 @@ var gameLogic;
     //   return [['', '', ''],
     //           ['', '', ''],
     //           ['', '', '']];
+    // Battleship returns 4 10X10 matrix, where 0 board is P1's move board,
+    // 1 board is P2's move board, 2 board is P1's ship board, 3 board is P2's
+    // ship board
     // }
     function getInitialBoard() {
         return [
@@ -105,20 +108,19 @@ var gameLogic;
      * Returns all the possible moves for the given board and turnIndexBeforeMove.
      * Returns an empty array if the game is over.
      */
-    function getPossibleMoves(board, turnIndexBeforeMove) {
-        var possibleMoves = [];
-        for (var i = 0; i < 3; i++) {
-            for (var j = 0; j < 3; j++) {
-                try {
-                    possibleMoves.push(createMove(board, i, j, turnIndexBeforeMove));
-                }
-                catch (e) {
-                }
-            }
-        }
-        return possibleMoves;
-    }
-    gameLogic.getPossibleMoves = getPossibleMoves;
+    // export function getPossibleMoves(board: Board, turnIndexBeforeMove: number): IMove[] {
+    //   var possibleMoves: IMove[] = [];
+    //   for (var i = 0; i < 3; i++) {
+    //     for (var j = 0; j < 3; j++) {
+    //       try {
+    //         possibleMoves.push(createMove(board, i, j, turnIndexBeforeMove));
+    //       } catch (e) {
+    //         // The cell in that position was full.
+    //       }
+    //     }
+    //   }
+    //   return possibleMoves;
+    // }
     /**
      * Returns the move that should be performed when player
      * with index turnIndexBeforeMove makes a move in cell row X col.
@@ -135,12 +137,12 @@ var gameLogic;
             throw new Error("Can only make a move if the game is not over!");
         }
         var boardAfterMove = angular.copy(board);
-        boardAfterMove[turnIndexBeforeMove][row][col] = turnIndexBeforeMove === 0 ? 'X' : 'O';
+        boardAfterMove[turnIndexBeforeMove][row][col] = 'X';
         var winner = getWinner(boardAfterMove, turnIndexBeforeMove);
         var firstOperation;
         if (winner !== '') {
             // Game over.
-            firstOperation = { endMatch: { endMatchScores: winner === 'X' ? [1, 0] : winner === 'O' ? [0, 1] : [0, 0] } };
+            firstOperation = { endMatch: { endMatchScores: winner === 'P1' ? [1, 0] : winner === 'P2' ? [0, 1] : [0, 0] } };
         }
         else {
             // Game continues. Now it's the opponent's turn (the turn switches from 0 to 1 and 1 to 0).
