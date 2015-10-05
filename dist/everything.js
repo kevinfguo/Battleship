@@ -1,17 +1,57 @@
 var gameLogic;
 (function (gameLogic) {
-    gameLogic.ROWS = 3;
-    gameLogic.COLS = 3;
-    /** Returns the initial TicTacToe board, which is a ROWSxCOLS matrix containing ''. */
+    /** Returns the initial TicTacToe board, which is a 3x3 matrix containing ''. */
+    // export function getInitialBoard(): Board {
+    //   return [['', '', ''],
+    //           ['', '', ''],
+    //           ['', '', '']];
+    // Battleship returns 4 10X10 matrix, where 0 board is P1's move board,
+    // 1 board is P2's move board, 2 board is P1's ship board, 3 board is P2's
+    // ship board
+    // }
     function getInitialBoard() {
-        var board = [];
-        for (var i = 0; i < gameLogic.ROWS; i++) {
-            board[i] = [];
-            for (var j = 0; j < gameLogic.COLS; j++) {
-                board[i][j] = '';
-            }
-        }
-        return board;
+        return [
+            [['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', '']],
+            [['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', '']],
+            [['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', 'X', '']],
+            [['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', '', 'X', '']]
+        ];
     }
     gameLogic.getInitialBoard = getInitialBoard;
     /**
@@ -21,18 +61,19 @@ var gameLogic;
      *      ['X', 'O', 'O'],
      *      ['O', 'X', 'X']]
      */
-    function isTie(board) {
-        for (var i = 0; i < gameLogic.ROWS; i++) {
-            for (var j = 0; j < gameLogic.COLS; j++) {
-                if (board[i][j] === '') {
-                    // If there is an empty cell then we do not have a tie.
-                    return false;
-                }
-            }
-        }
-        // No empty cells, so we have a tie!
-        return true;
-    }
+    // There is no such thing as a "tie" in Battleship!
+    // function isTie(board: Board, turnIndexBeforeMove: number): boolean {
+    //   for (var i = 0; i < 3; i++) {
+    //     for (var j = 0; j < 3; j++) {
+    //       if (board[i][j] === '') {
+    //         // If there is an empty cell then we do not have a tie.
+    //         return false;
+    //       }
+    //     }
+    //   }
+    //   // No empty cells, so we have a tie!
+    //   return true;
+    // }
     /**
      * Return the winner (either 'X' or 'O') or '' if there is no winner.
      * The board is a matrix of size 3x3 containing either 'X', 'O', or ''.
@@ -40,56 +81,60 @@ var gameLogic;
      *     [['X', 'O', ''],
      *      ['X', 'O', ''],
      *      ['X', '', '']]
+     * Return the winner (either P1 or P2) or '' if there is no winner.
+     * The board is composed of 4 10x10 matrices, 2 containing either 'X' or
+     * "O", or ''. The other 2 contain locations of ships marked by 'X'.
+     * Retruns the player for which there are 'X' on all spaces of the opposing
+     * player's ships
      */
-    function getWinner(board) {
-        var boardString = '';
-        for (var i = 0; i < gameLogic.ROWS; i++) {
-            for (var j = 0; j < gameLogic.COLS; j++) {
-                var cell = board[i][j];
-                boardString += cell === '' ? ' ' : cell;
+    function getWinner(board, turnIndexBeforeMove) {
+        var P1 = true;
+        var P2 = true;
+        for (var i = 0; i < 10; i++) {
+            for (var j = 0; j < 10; j++) {
+                var cell1 = board[3][i][j];
+                var cell2 = board[0][i][j];
+                if (cell1 == 'X' && cell2 != 'X') {
+                    P1 = false;
+                }
             }
         }
-        var win_patterns = [
-            'XXX......',
-            '...XXX...',
-            '......XXX',
-            'X..X..X..',
-            '.X..X..X.',
-            '..X..X..X',
-            'X...X...X',
-            '..X.X.X..'
-        ];
-        for (var _i = 0; _i < win_patterns.length; _i++) {
-            var win_pattern = win_patterns[_i];
-            var x_regexp = new RegExp(win_pattern);
-            var o_regexp = new RegExp(win_pattern.replace(/X/g, 'O'));
-            if (x_regexp.test(boardString)) {
-                return 'X';
-            }
-            if (o_regexp.test(boardString)) {
-                return 'O';
+        for (var i = 0; i < 10; i++) {
+            for (var j = 0; j < 10; j++) {
+                var cell1 = board[2][i][j];
+                var cell2 = board[1][i][j];
+                if (cell1 == 'X' && cell2 != 'X') {
+                    P2 = false;
+                }
             }
         }
-        return '';
+        if (P1) {
+            return "P1";
+        }
+        else if (P2) {
+            return "P2";
+        }
+        else {
+            return "";
+        }
     }
     /**
      * Returns all the possible moves for the given board and turnIndexBeforeMove.
      * Returns an empty array if the game is over.
      */
-    function getPossibleMoves(board, turnIndexBeforeMove) {
-        var possibleMoves = [];
-        for (var i = 0; i < gameLogic.ROWS; i++) {
-            for (var j = 0; j < gameLogic.COLS; j++) {
-                try {
-                    possibleMoves.push(createMove(board, i, j, turnIndexBeforeMove));
-                }
-                catch (e) {
-                }
-            }
-        }
-        return possibleMoves;
-    }
-    gameLogic.getPossibleMoves = getPossibleMoves;
+    // export function getPossibleMoves(board: Board, turnIndexBeforeMove: number): IMove[] {
+    //   var possibleMoves: IMove[] = [];
+    //   for (var i = 0; i < 3; i++) {
+    //     for (var j = 0; j < 3; j++) {
+    //       try {
+    //         possibleMoves.push(createMove(board, i, j, turnIndexBeforeMove));
+    //       } catch (e) {
+    //         // The cell in that position was full.
+    //       }
+    //     }
+    //   }
+    //   return possibleMoves;
+    // }
     /**
      * Returns the move that should be performed when player
      * with index turnIndexBeforeMove makes a move in cell row X col.
@@ -99,19 +144,19 @@ var gameLogic;
             // Initially (at the beginning of the match), the board in state is undefined.
             board = getInitialBoard();
         }
-        if (board[row][col] !== '') {
+        if (board[turnIndexBeforeMove][row][col] !== '') {
             throw new Error("One can only make a move in an empty position!");
         }
-        if (getWinner(board) !== '' || isTie(board)) {
+        if (getWinner(board, turnIndexBeforeMove) !== '') {
             throw new Error("Can only make a move if the game is not over!");
         }
         var boardAfterMove = angular.copy(board);
-        boardAfterMove[row][col] = turnIndexBeforeMove === 0 ? 'X' : 'O';
-        var winner = getWinner(boardAfterMove);
+        boardAfterMove[turnIndexBeforeMove][row][col] = 'X';
+        var winner = getWinner(boardAfterMove, turnIndexBeforeMove);
         var firstOperation;
-        if (winner !== '' || isTie(boardAfterMove)) {
+        if (winner !== '') {
             // Game over.
-            firstOperation = { endMatch: { endMatchScores: winner === 'X' ? [1, 0] : winner === 'O' ? [0, 1] : [0, 0] } };
+            firstOperation = { endMatch: { endMatchScores: winner === 'P1' ? [1, 0] : [0, 1] } };
         }
         else {
             // Game continues. Now it's the opponent's turn (the turn switches from 0 to 1 and 1 to 0).
@@ -127,9 +172,11 @@ var gameLogic;
         var move = params.move;
         var turnIndexBeforeMove = params.turnIndexBeforeMove;
         var stateBeforeMove = params.stateBeforeMove;
-        // The state and turn after move are not needed in TicTacToe (or in any game where all state is public).
-        //let turnIndexAfterMove = params.turnIndexAfterMove;
-        //let stateAfterMove = params.stateAfterMove;
+        // The state and turn after move are not needed in Battleship since attacks
+        // are all logged on the player's own hit board, so all non-empty spaces
+        // are valid moves
+        //var turnIndexAfterMove = params.turnIndexAfterMove;
+        //var stateAfterMove = params.stateAfterMove;
         // We can assume that turnIndexBeforeMove and stateBeforeMove are legal, and we need
         // to verify that move is legal.
         try {
@@ -187,7 +234,7 @@ var gameLogic;
         });
     }
     function sendComputerMove() {
-        gameService.makeMove(aiService.createComputerMove(state.board, turnIndex, 
+        gameService.makeMove(aiService.createComputerMove(state.board, turnIndex,
         // at most 1 second for the AI to choose a move (but might be much quicker)
         { millisecondsLimit: 1000 }));
     }
@@ -196,6 +243,7 @@ var gameLogic;
         state = params.stateAfterMove;
         if (!state.board) {
             state.board = gameLogic.getInitialBoard();
+            console.log(state.board);
         }
         canMakeMove = params.turnIndexAfterMove >= 0 &&
             params.yourPlayerIndex === params.turnIndexAfterMove; // it's my turn
@@ -227,6 +275,7 @@ var gameLogic;
         }
         try {
             var move = gameLogic.createMove(state.board, row, col, turnIndex);
+            console.log(move);
             canMakeMove = false; // to prevent making another move
             gameService.makeMove(move);
         }
