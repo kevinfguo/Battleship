@@ -40,7 +40,7 @@ var gameLogic;
                 ['', '', '', '', '', '', '', '', '', ''],
                 ['', '', '', '', '', '', '', '', '', ''],
                 ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', '']],
+                ['', '', '', '', '', '', '', '', 'X', '']],
             [['', '', '', '', '', '', '', '', '', ''],
                 ['', '', '', '', '', '', '', '', '', ''],
                 ['', '', '', '', '', '', '', '', '', ''],
@@ -50,7 +50,7 @@ var gameLogic;
                 ['', '', '', '', '', '', '', '', '', ''],
                 ['', '', '', '', '', '', '', '', '', ''],
                 ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', '']]
+                ['', '', '', '', '', '', '', '', 'X', '']]
         ];
     }
     gameLogic.getInitialBoard = getInitialBoard;
@@ -88,20 +88,34 @@ var gameLogic;
      * player's ships
      */
     function getWinner(board, turnIndexBeforeMove) {
+        var P1 = true;
+        var P2 = true;
         for (var i = 0; i < 10; i++) {
             for (var j = 0; j < 10; j++) {
-                var cell1 = board[3 - turnIndexBeforeMove][i][j];
-                var cell2 = board[turnIndexBeforeMove][i][j];
+                var cell1 = board[3][i][j];
+                var cell2 = board[0][i][j];
                 if (cell1 == 'X' && cell2 != 'X') {
-                    return '';
+                    P1 = false;
                 }
             }
         }
-        if (turnIndexBeforeMove === 0) {
+        for (var i = 0; i < 10; i++) {
+            for (var j = 0; j < 10; j++) {
+                var cell1 = board[2][i][j];
+                var cell2 = board[1][i][j];
+                if (cell1 == 'X' && cell2 != 'X') {
+                    P2 = false;
+                }
+            }
+        }
+        if (P1) {
             return "P1";
         }
-        else {
+        else if (P2) {
             return "P2";
+        }
+        else {
+            return "";
         }
     }
     /**
@@ -142,7 +156,7 @@ var gameLogic;
         var firstOperation;
         if (winner !== '') {
             // Game over.
-            firstOperation = { endMatch: { endMatchScores: winner === 'P1' ? [1, 0] : winner === 'P2' ? [0, 1] : [0, 0] } };
+            firstOperation = { endMatch: { endMatchScores: winner === 'P1' ? [1, 0] : [0, 1] } };
         }
         else {
             // Game continues. Now it's the opponent's turn (the turn switches from 0 to 1 and 1 to 0).
