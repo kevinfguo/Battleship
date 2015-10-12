@@ -39,29 +39,41 @@ module aiService {
     // 0) endMatch or setTurn
     // 1) {set: {key: 'board', value: ...}}
     // 2) {set: {key: 'delta', value: ...}}]
-    return alphaBetaService.alphaBetaDecision(
-        [null, {set: {key: 'board', value: board}}],
-        playerIndex, getNextStates, getStateScoreForIndex0,
-        // If you want to see debugging output in the console, then surf to index.html?debug
-        window.location.search === '?debug' ? getDebugStateToString : null,
-        alphaBetaLimits);
+    // return alphaBetaService.alphaBetaDecision(
+    //     [null, {set: {key: 'board', value: board}}],
+    //     playerIndex, getNextStates, getStateScoreForIndex0,
+    //     // If you want to see debugging output in the console, then surf to index.html?debug
+    //     window.location.search === '?debug' ? getDebugStateToString : null,
+    //     alphaBetaLimits);
+      return randomGuess(getPossibleMoves(board, playerIndex));
   }
 
-  function getStateScoreForIndex0(move: IMove, playerIndex: number): number {
-    if (move[0].endMatch) {
-      let endMatchScores = move[0].endMatch.endMatchScores;
-      return endMatchScores[0] > endMatchScores[1] ? Number.POSITIVE_INFINITY
-          : endMatchScores[0] < endMatchScores[1] ? Number.NEGATIVE_INFINITY
-          : 0;
-    }
-    return 0;
+  export function randomGuess(possibleMoves: IMove[]) : IMove{
+    var finalMove : IMove;
+    var randomMove = Math.floor(Math.random()*possibleMoves.length);
+    finalMove = possibleMoves[randomMove];
+    //console.log(possibleMoves.length);
+    // for (var possibleMove in possibleMoves){
+    //
+    // }
+    return finalMove;
   }
 
-  function getNextStates(move: IMove, playerIndex: number): IMove[] {
-    return getPossibleMoves(move[1].set.value, playerIndex);
-  }
+  // function getStateScoreForIndex0(move: IMove, playerIndex: number): number {
+  //   if (move[0].endMatch) {
+  //     let endMatchScores = move[0].endMatch.endMatchScores;
+  //     return endMatchScores[0] > endMatchScores[1] ? Number.POSITIVE_INFINITY
+  //         : endMatchScores[0] < endMatchScores[1] ? Number.NEGATIVE_INFINITY
+  //         : 0;
+  //   }
+  //   return 0;
+  // }
 
-  function getDebugStateToString(move: IMove): string {
-    return "\n" + move[1].set.value.join("\n") + "\n";
-  }
+  // function getNextStates(move: IMove, playerIndex: number): IMove[] {
+  //   return getPossibleMoves(move[1].set.value, playerIndex);
+  // }
+  //
+  // function getDebugStateToString(move: IMove): string {
+  //   return "\n" + move[1].set.value.join("\n") + "\n";
+  // }
 }

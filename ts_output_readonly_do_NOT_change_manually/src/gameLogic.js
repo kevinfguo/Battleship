@@ -1,5 +1,7 @@
 var gameLogic;
 (function (gameLogic) {
+    gameLogic.ROWS = 10;
+    gameLogic.COLS = 10;
     /** Returns the initial TicTacToe board, which is a 3x3 matrix containing ''. */
     // export function getInitialBoard(): Board {
     //   return [['', '', ''],
@@ -94,7 +96,7 @@ var gameLogic;
             for (var j = 0; j < 10; j++) {
                 var cell1 = board[3][i][j];
                 var cell2 = board[0][i][j];
-                if (cell1 == 'X' && cell2 != 'X') {
+                if (cell1 == 'X' && cell2 != 'O') {
                     P1 = false;
                 }
             }
@@ -103,7 +105,7 @@ var gameLogic;
             for (var j = 0; j < 10; j++) {
                 var cell1 = board[2][i][j];
                 var cell2 = board[1][i][j];
-                if (cell1 == 'X' && cell2 != 'X') {
+                if (cell1 == 'X' && cell2 != 'O') {
                     P2 = false;
                 }
             }
@@ -134,7 +136,12 @@ var gameLogic;
             throw new Error("Can only make a move if the game is not over!");
         }
         var boardAfterMove = angular.copy(board);
-        boardAfterMove[turnIndexBeforeMove][row][col] = 'X';
+        if (boardAfterMove[3 - turnIndexBeforeMove][row][col] === 'X') {
+            boardAfterMove[turnIndexBeforeMove][row][col] = 'O';
+        }
+        else {
+            boardAfterMove[turnIndexBeforeMove][row][col] = 'X';
+        }
         var winner = getWinner(boardAfterMove, turnIndexBeforeMove);
         var firstOperation;
         if (winner !== '') {

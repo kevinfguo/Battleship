@@ -31,13 +31,7 @@ var game;
         });
     }
     function sendComputerMove() {
-<<<<<<< HEAD
-        gameService.makeMove(aiService.createComputerMove(state.board, turnIndex,
-        // at most 1 second for the AI to choose a move (but might be much quicker)
-        { millisecondsLimit: 1000 }));
-=======
         gameService.makeMove(aiService.findComputerMove(lastUpdateUI));
->>>>>>> yoav-zibin/gh-pages
     }
     function updateUI(params) {
         animationEnded = false;
@@ -45,7 +39,6 @@ var game;
         state = params.stateAfterMove;
         if (!state.board) {
             state.board = gameLogic.getInitialBoard();
-            console.log(state.board);
         }
         canMakeMove = params.turnIndexAfterMove >= 0 &&
             params.yourPlayerIndex === params.turnIndexAfterMove; // it's my turn
@@ -75,12 +68,7 @@ var game;
             return;
         }
         try {
-<<<<<<< HEAD
-            var move = gameLogic.createMove(state.board, row, col, turnIndex);
-            console.log(move);
-=======
             var move = gameLogic.createMove(state.board, row, col, lastUpdateUI.turnIndexAfterMove);
->>>>>>> yoav-zibin/gh-pages
             canMakeMove = false; // to prevent making another move
             gameService.makeMove(move);
         }
