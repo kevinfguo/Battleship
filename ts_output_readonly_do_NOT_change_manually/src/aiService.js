@@ -25,6 +25,46 @@ var aiService;
         return possibleMoves;
     }
     aiService.getPossibleMoves = getPossibleMoves;
+    function scoreMoves(moves, turnIndexBeforeMove) {
+        var scoredMoves = [];
+        var bestMoves = [];
+        var max = 0;
+        for (var i = 0; i < moves.length; i++) {
+            scoredMoves[i] = getScoredMove(moves[i], turnIndexBeforeMove);
+            if (scoredMoves[i] == max) {
+                bestMoves.push(moves[i]);
+            }
+            else if (scoredMoves[i] > max) {
+                bestMoves = [];
+                bestMoves.push(moves[i]);
+            }
+        }
+        var randomMove = Math.floor(Math.random() * bestMoves.length);
+        return bestMoves[randomMove];
+    }
+    aiService.scoreMoves = scoreMoves;
+    function getScoredMove(move, turnIndexBeforeMove) {
+        var scoredMove = 0;
+        var board = move[1].set.value;
+        var delta = move[2].set.value;
+        var row = delta.row;
+        var col = delta.col;
+        scoredMove += checkHit(board, row + 1, col, turnIndexBeforeMove);
+        scoredMove += checkHit(board, row - 1, col, turnIndexBeforeMove);
+        scoredMove += checkHit(board, row, col + 1, turnIndexBeforeMove);
+        scoredMove += checkHit(board, row, col - 1, turnIndexBeforeMove);
+        return scoredMove;
+    }
+    aiService.getScoredMove = getScoredMove;
+    function checkHit(board, row, column, turnIndexBeforeMove) {
+        if (row > 9 || column > 9 || row < 0 || column < 0) {
+            return 0;
+        }
+        if (board[turnIndexBeforeMove][row][column] === 'O') {
+            return 1;
+        }
+        return 0;
+    }
     /**
      * Returns the move that the computer player should do for the given board.
      * alphaBetaLimits is an object that sets a limit on the alpha-beta search,

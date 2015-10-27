@@ -26,6 +26,46 @@ module aiService {
     return possibleMoves;
   }
 
+  export function scoreMoves(moves : IMove[], turnIndexBeforeMove: number) : IMove{
+    let scoredMoves: number[] = [];
+    let bestMoves: IMove[] = [];
+    let max : number = 0;
+    for (let i = 0; i < moves.length; i++){
+      scoredMoves[i] = getScoredMove(moves[i], turnIndexBeforeMove);
+      if (scoredMoves[i] == max){
+        bestMoves.push(moves[i]);
+      }else if (scoredMoves[i] > max){
+        bestMoves = [];
+        bestMoves.push(moves[i]);
+      }
+    }
+    let randomMove = Math.floor(Math.random()*bestMoves.length);
+    return bestMoves[randomMove];
+  }
+
+  export function getScoredMove(move: IMove, turnIndexBeforeMove: number): number{
+    let scoredMove : number = 0;
+    let board : Board = move[1].set.value;
+    let delta : BoardDelta = move[2].set.value;
+    let row : number = delta.row;
+    let col : number = delta.col;
+    scoredMove += checkHit(board, row+1, col, turnIndexBeforeMove);
+    scoredMove += checkHit(board, row-1, col, turnIndexBeforeMove);
+    scoredMove += checkHit(board, row, col+1, turnIndexBeforeMove);
+    scoredMove += checkHit(board, row, col-1, turnIndexBeforeMove);
+    return scoredMove;
+  }
+
+  function checkHit(board: Board, row: number, column: number, turnIndexBeforeMove: number): number{
+    if (row > 9 || column > 9 || row < 0 || column < 0){
+      return 0;
+    }
+    if (board[turnIndexBeforeMove][row][column] === 'O'){
+      return 1;
+    }
+    return 0;
+  }
+
   /**
    * Returns the move that the computer player should do for the given board.
    * alphaBetaLimits is an object that sets a limit on the alpha-beta search,

@@ -4,6 +4,16 @@
 .b {
   border-bottom: 4pt solid black;
 }
+.l {
+  border-left: 4pt solid black;
+}
+.t {
+  border-top: 4pt solid black;
+}
+
+.player1Board{
+  margin-right: 10px;
+}
 
 .slowlyAppear {
 	-webkit-animation: slowlyAppear 0.5s linear;
