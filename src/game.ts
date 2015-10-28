@@ -37,6 +37,7 @@ module game {
   }
 
   function updateUI(params: IUpdateUI): void {
+    log.info("Game got updateUI:", params);
     animationEnded = false;
     lastUpdateUI = params;
     state = params.stateAfterMove;
@@ -65,7 +66,7 @@ module game {
   }
 
   export function cellClicked(row: number, col: number): void {
-    log.info(["Clicked on cell:", row, col]);
+    log.info("Clicked on cell:", row, col);
     if (window.location.search === '?throwException') { // to test encoding a stack trace with sourcemap
       throw new Error("Throwing the error because URL has '?throwException'");
     }
@@ -103,8 +104,8 @@ module game {
   }
 }
 
-angular.module('myApp', ['ngTouch', 'ui.bootstrap'])
-  .run(['initGameServices', function (initGameServices: any) {
+angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
+  .run(function () {
   $rootScope['game'] = game;
   translate.setLanguage('en',  {
     RULES_OF_TICTACTOE: "Rules of TicTacToe",
@@ -113,4 +114,4 @@ angular.module('myApp', ['ngTouch', 'ui.bootstrap'])
     CLOSE: "Close"
   });
   game.init();
-}]);
+});
