@@ -15,6 +15,18 @@
   margin-right: 10px;
 }
 
+#playerBoard_1{
+  margin-right: 10px;
+}
+
+.battleship{
+  background-color: grey;
+}
+
+.sea{
+  background-color: #89CFF0;
+}
+
 .slowlyAppear {
 	-webkit-animation: slowlyAppear 0.5s linear;
 	-moz-animation: slowlyAppear 0.5s linear;

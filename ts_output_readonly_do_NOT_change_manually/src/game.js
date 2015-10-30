@@ -7,7 +7,7 @@ var game;
     var state = null;
     game.isHelpModalShown = false;
     function init() {
-        console.log("Translation of 'RULES_OF_TICTACTOE' is " + translate('RULES_OF_TICTACTOE'));
+        console.log("Translation of 'RULES_OF_BATTLESHIP' is " + translate('RULES_OF_BATTLESHIP'));
         resizeGameAreaService.setWidthToHeight(1);
         gameService.setGame({
             minNumberOfPlayers: 2,
@@ -60,12 +60,12 @@ var game;
             }
         }
     }
-    function cellClicked(row, col) {
-        log.info("Clicked on cell:", row, col);
+    function cellClicked(row, col, board) {
+        log.info("Clicked on board:", board, "Clicked on cell:", row, col);
         if (window.location.search === '?throwException') {
             throw new Error("Throwing the error because URL has '?throwException'");
         }
-        if (!canMakeMove) {
+        if (!canMakeMove || lastUpdateUI.turnIndexAfterMove != 1 - board) {
             return;
         }
         try {
@@ -79,17 +79,17 @@ var game;
         }
     }
     game.cellClicked = cellClicked;
-    function shouldShowImage(row, col) {
-        var cell = state.board[row][col];
+    function shouldShowImage(row, col, player) {
+        var cell = state.board[1 - player][row][col];
         return cell !== "";
     }
     game.shouldShowImage = shouldShowImage;
-    function isPieceX(row, col) {
-        return state.board[row][col] === 'X';
+    function isPieceX(row, col, player) {
+        return state.board[1 - player][row][col] === 'X';
     }
     game.isPieceX = isPieceX;
-    function isPieceO(row, col) {
-        return state.board[row][col] === 'O';
+    function isPieceO(row, col, player) {
+        return state.board[1 - player][row][col] === 'O';
     }
     game.isPieceO = isPieceO;
     function shouldSlowlyAppear(row, col) {
@@ -98,14 +98,24 @@ var game;
             state.delta.row === row && state.delta.col === col;
     }
     game.shouldSlowlyAppear = shouldSlowlyAppear;
+    function isBattleship(row, col, player) {
+        if (lastUpdateUI.turnIndexBeforeMove != 1 - player || isComputerTurn) {
+            return false;
+        }
+        return state.board[2 + player][row][col] === 'X';
+    }
+    game.isBattleship = isBattleship;
 })(game || (game = {}));
 angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
     .run(function () {
     $rootScope['game'] = game;
     translate.setLanguage('en', {
-        RULES_OF_TICTACTOE: "Rules of TicTacToe",
-        RULES_SLIDE1: "You and your opponent take turns to mark the grid in an empty spot. The first mark is X, then O, then X, then O, etc.",
-        RULES_SLIDE2: "The first to mark a whole row, column or diagonal wins.",
+        RULES_OF_BATTLESHIP: "Rules of Battleship",
+        RULES_SLIDE1: "First, you and your opponent place your 5 battleships on your own board.",
+        RULES_SLIDE2: "You and your opponent then take turns to fire upon the enemy board. If you hit an enemy battleship, you will score a X. If you miss, you will score a O.",
+        RULES_SLIDE3: "The first player to eliminate all opposing battleships is declared the winner.",
+        // RULES_SLIDE1: "You and your opponent take turns to mark the grid in an empty spot. The first mark is X, then O, then X, then O, etc.",
+        // RULES_SLIDE2: "The first to mark a whole row, column or diagonal wins.",
         CLOSE: "Close"
     });
     game.init();

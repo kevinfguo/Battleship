@@ -7,7 +7,7 @@ module game {
   export let isHelpModalShown: boolean = false;
 
   export function init() {
-    console.log("Translation of 'RULES_OF_TICTACTOE' is " + translate('RULES_OF_TICTACTOE'));
+    console.log("Translation of 'RULES_OF_BATTLESHIP' is " + translate('RULES_OF_BATTLESHIP'));
     resizeGameAreaService.setWidthToHeight(1);
     gameService.setGame({
       minNumberOfPlayers: 2,
@@ -65,12 +65,12 @@ module game {
     }
   }
 
-  export function cellClicked(row: number, col: number): void {
-    log.info("Clicked on cell:", row, col);
+  export function cellClicked(row: number, col: number, board: number): void {
+    log.info("Clicked on board:", board, "Clicked on cell:", row, col);
     if (window.location.search === '?throwException') { // to test encoding a stack trace with sourcemap
       throw new Error("Throwing the error because URL has '?throwException'");
     }
-    if (!canMakeMove) {
+    if (!canMakeMove || lastUpdateUI.turnIndexAfterMove != 1-board) {
       return;
     }
     try {
@@ -84,17 +84,17 @@ module game {
     }
   }
 
-  export function shouldShowImage(row: number, col: number): boolean {
-    let cell = state.board[row][col];
+  export function shouldShowImage(row: number, col: number, player: number): boolean {
+    let cell = state.board[1-player][row][col];
     return cell !== "";
   }
 
-  export function isPieceX(row: number, col: number): boolean {
-    return state.board[row][col] === 'X';
+  export function isPieceX(row: number, col: number, player: number): boolean {
+    return state.board[1-player][row][col] === 'X';
   }
 
-  export function isPieceO(row: number, col: number): boolean {
-    return state.board[row][col] === 'O';
+  export function isPieceO(row: number, col: number, player: number): boolean {
+    return state.board[1-player][row][col] === 'O';
   }
 
   export function shouldSlowlyAppear(row: number, col: number): boolean {
@@ -102,15 +102,25 @@ module game {
         state.delta &&
         state.delta.row === row && state.delta.col === col;
   }
+
+  export function isBattleship(row: number, col: number, player: number): boolean {
+    if (lastUpdateUI.turnIndexBeforeMove != 1-player || isComputerTurn){
+      return false;
+    }
+    return state.board[2+player][row][col] === 'X';
+  }
 }
 
 angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
   .run(function () {
   $rootScope['game'] = game;
   translate.setLanguage('en',  {
-    RULES_OF_TICTACTOE: "Rules of TicTacToe",
-    RULES_SLIDE1: "You and your opponent take turns to mark the grid in an empty spot. The first mark is X, then O, then X, then O, etc.",
-    RULES_SLIDE2: "The first to mark a whole row, column or diagonal wins.",
+    RULES_OF_BATTLESHIP: "Rules of Battleship",
+    RULES_SLIDE1: "First, you and your opponent place your 5 battleships on your own board.",
+    RULES_SLIDE2: "You and your opponent then take turns to fire upon the enemy board. If you hit an enemy battleship, you will score a X. If you miss, you will score a O.",
+    RULES_SLIDE3: "The first player to eliminate all opposing battleships is declared the winner.",
+    // RULES_SLIDE1: "You and your opponent take turns to mark the grid in an empty spot. The first mark is X, then O, then X, then O, etc.",
+    // RULES_SLIDE2: "The first to mark a whole row, column or diagonal wins.",
     CLOSE: "Close"
   });
   game.init();
