@@ -18,7 +18,7 @@ var game;
     var ship = 0;
     function init() {
         console.log("Translation of 'RULES_OF_BATTLESHIP' is " + translate('RULES_OF_BATTLESHIP'));
-        resizeGameAreaService.setWidthToHeight(1);
+        resizeGameAreaService.setWidthToHeight(2);
         gameService.setGame({
             minNumberOfPlayers: 2,
             maxNumberOfPlayers: 2,
