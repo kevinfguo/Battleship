@@ -35,6 +35,10 @@
 	animation: slowlyAppear 0.5s linear;
 }
 
+#playerBoard_1{
+  padding-right: 10px;
+}
+
 @-webkit-keyframes slowlyAppear {
   from {opacity: 0.1;}
   to {opacity: 1;}

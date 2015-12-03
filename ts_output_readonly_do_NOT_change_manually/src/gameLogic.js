@@ -12,48 +12,69 @@ var gameLogic;
     // ship board
     // }
     function getInitialBoard() {
-        return [
-            [['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', '']],
-            [['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', '']],
-            [['X', '', '', '', '', '', '', '', '', ''],
-                ['X', '', '', '', '', '', '', '', '', ''],
-                ['X', '', '', '', '', '', '', '', '', ''],
-                ['X', '', '', '', '', '', '', '', '', ''],
-                ['X', '', '', '', '', '', '', '', '', ''],
-                ['', '', 'X', 'X', 'X', '', '', '', '', ''],
-                ['', 'X', '', '', '', '', '', '', '', ''],
-                ['', 'X', '', '', '', '', '', '', '', ''],
-                ['', 'X', '', '', '', '', '', '', 'X', ''],
-                ['', 'X', '', '', '', '', '', '', 'X', '']],
-            [['', '', '', '', '', '', '', '', '', ''],
-                ['X', '', '', '', '', '', '', '', '', ''],
-                ['X', '', '', '', '', '', '', '', '', ''],
-                ['X', '', '', '', '', '', '', '', '', ''],
-                ['X', '', '', '', '', '', '', '', '', ''],
-                ['X', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', 'X', 'X', 'X', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['X', 'X', 'X', 'X', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', 'X', 'X']]
-        ];
+        return { "gameBoard": [
+                [['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', '']],
+                [['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', '']],
+                // [['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','','']],
+                // [['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','','']]
+                [['X', '', '', '', '', '', '', '', '', ''],
+                    ['X', '', '', '', '', '', '', '', '', ''],
+                    ['X', '', '', '', '', '', '', '', '', ''],
+                    ['X', '', '', '', '', '', '', '', '', ''],
+                    ['X', '', '', '', '', '', '', '', '', ''],
+                    ['', '', 'X', 'X', 'X', '', '', '', '', ''],
+                    ['', 'X', '', '', '', '', '', '', '', ''],
+                    ['', 'X', '', '', '', '', '', '', '', ''],
+                    ['', 'X', '', '', '', '', '', '', 'X', ''],
+                    ['', 'X', '', '', '', '', '', '', 'X', '']],
+                [['', '', '', '', '', '', '', '', '', ''],
+                    ['X', '', '', '', '', '', '', '', '', ''],
+                    ['X', '', '', '', '', '', '', '', '', ''],
+                    ['X', '', '', '', '', '', '', '', '', ''],
+                    ['X', '', '', '', '', '', '', '', '', ''],
+                    ['X', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', 'X', 'X', 'X', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['X', 'X', 'X', 'X', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', 'X', 'X']]
+            ],
+            "phase": 2 };
     }
     gameLogic.getInitialBoard = getInitialBoard;
     /**
@@ -94,8 +115,8 @@ var gameLogic;
         var P2 = true;
         for (var i = 0; i < 10; i++) {
             for (var j = 0; j < 10; j++) {
-                var cell1 = board[3][i][j];
-                var cell2 = board[0][i][j];
+                var cell1 = board.gameBoard[3][i][j];
+                var cell2 = board.gameBoard[0][i][j];
                 if (cell1 == 'X' && cell2 != 'O') {
                     P1 = false;
                 }
@@ -103,8 +124,8 @@ var gameLogic;
         }
         for (var i = 0; i < 10; i++) {
             for (var j = 0; j < 10; j++) {
-                var cell1 = board[2][i][j];
-                var cell2 = board[1][i][j];
+                var cell1 = board.gameBoard[2][i][j];
+                var cell2 = board.gameBoard[1][i][j];
                 if (cell1 == 'X' && cell2 != 'O') {
                     P2 = false;
                 }
@@ -129,33 +150,44 @@ var gameLogic;
             // Initially (at the beginning of the match), the board in state is undefined.
             board = getInitialBoard();
         }
-        if (board[turnIndexBeforeMove][row][col] !== '') {
-            throw new Error("One can only make a move in an empty position!");
-        }
-        if (getWinner(board, turnIndexBeforeMove) !== '') {
-            throw new Error("Can only make a move if the game is not over!");
-        }
-        var boardAfterMove = angular.copy(board);
-        if (boardAfterMove[3 - turnIndexBeforeMove][row][col] === 'X') {
-            boardAfterMove[turnIndexBeforeMove][row][col] = 'O';
-        }
-        else {
-            boardAfterMove[turnIndexBeforeMove][row][col] = 'X';
-        }
-        var winner = getWinner(boardAfterMove, turnIndexBeforeMove);
-        var firstOperation;
-        if (winner !== '') {
-            // Game over.
-            firstOperation = { endMatch: { endMatchScores: winner === 'P1' ? [1, 0] : [0, 1] } };
+        if (board.phase === 1) {
+            var boardAfterMove = angular.copy(board);
+            boardAfterMove.gameBoard[3 - turnIndexBeforeMove][row][col] = 'X';
+            var firstOperation = { setTurn: { turnIndex: 1 - turnIndexBeforeMove } };
+            var delta = { row: row, col: col };
+            return [firstOperation,
+                { set: { key: 'board', value: boardAfterMove } },
+                { set: { key: 'delta', value: delta } }];
         }
         else {
-            // Game continues. Now it's the opponent's turn (the turn switches from 0 to 1 and 1 to 0).
-            firstOperation = { setTurn: { turnIndex: 1 - turnIndexBeforeMove } };
+            if (board.gameBoard[turnIndexBeforeMove][row][col] !== '') {
+                throw new Error("One can only make a move in an empty position!");
+            }
+            if (getWinner(board, turnIndexBeforeMove) !== '') {
+                throw new Error("Can only make a move if the game is not over!");
+            }
+            var boardAfterMove = angular.copy(board);
+            if (boardAfterMove.gameBoard[3 - turnIndexBeforeMove][row][col] === 'X') {
+                boardAfterMove.gameBoard[turnIndexBeforeMove][row][col] = 'O';
+            }
+            else {
+                boardAfterMove.gameBoard[turnIndexBeforeMove][row][col] = 'X';
+            }
+            var winner = getWinner(boardAfterMove, turnIndexBeforeMove);
+            var firstOperation;
+            if (winner !== '') {
+                // Game over.
+                firstOperation = { endMatch: { endMatchScores: winner === 'P1' ? [1, 0] : [0, 1] } };
+            }
+            else {
+                // Game continues. Now it's the opponent's turn (the turn switches from 0 to 1 and 1 to 0).
+                firstOperation = { setTurn: { turnIndex: 1 - turnIndexBeforeMove } };
+            }
+            var delta = { row: row, col: col };
+            return [firstOperation,
+                { set: { key: 'board', value: boardAfterMove } },
+                { set: { key: 'delta', value: delta } }];
         }
-        var delta = { row: row, col: col };
-        return [firstOperation,
-            { set: { key: 'board', value: boardAfterMove } },
-            { set: { key: 'delta', value: delta } }];
     }
     gameLogic.createMove = createMove;
     function isMoveOk(params) {

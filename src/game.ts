@@ -6,6 +6,17 @@ module game {
   let state: IState = null;
   export let isHelpModalShown: boolean = false;
 
+  var draggingPiece: HTMLElement;
+  let gameArea:HTMLElement;
+  let realGameArea:HTMLElement;
+  let draggingLines:HTMLElement;
+  let verticalDraggingLine:HTMLElement;
+  let horizontalDraggingLine:HTMLElement;
+  let draggingSquare:HTMLElement;
+  var rowsNum: number = 10;
+  var colsNum: number = 20;
+  var ship: number = 0;
+
   export function init() {
     console.log("Translation of 'RULES_OF_BATTLESHIP' is " + translate('RULES_OF_BATTLESHIP'));
     resizeGameAreaService.setWidthToHeight(1);
@@ -20,6 +31,63 @@ module game {
     document.addEventListener("animationend", animationEndedCallback, false); // standard
     document.addEventListener("webkitAnimationEnd", animationEndedCallback, false); // WebKit
     document.addEventListener("oanimationend", animationEndedCallback, false); // Opera
+    dragAndDropService.addDragListener("boardArea", handleDragEvent);
+  }
+
+  export function handleDragEvent(type: string, clientX: number, clientY: number){
+    gameArea = document.getElementById("boardArea");
+    realGameArea = document.getElementById("gameArea");
+    draggingLines = document.getElementById("draggingLines");
+    verticalDraggingLine = document.getElementById("verticalDraggingLine");
+    horizontalDraggingLine = document.getElementById("horizontalDraggingLine");
+    draggingSquare = null;
+
+
+    // Center point in gameArea
+    var x = clientX - realGameArea.offsetLeft;
+    var y = clientY - Math.floor(gameArea.offsetTop+gameArea.offsetTop*0.05);
+    // Is outside gameArea?
+    if (x < 0 || y < 0 || x >= gameArea.clientWidth || y >= gameArea.clientHeight) {
+      draggingLines.style.display = "none";
+      return;
+    }
+    draggingLines.style.display = "inline";
+    // Inside gameArea. Let's find the containing square's row and col
+    var col = Math.floor(colsNum * x / gameArea.clientWidth);
+    var row = Math.floor(rowsNum * y / gameArea.clientHeight);
+    var centerXY = getSquareCenterXY(row, col);
+    verticalDraggingLine.setAttribute("x1", String(centerXY.x));
+    verticalDraggingLine.setAttribute("x2", String(centerXY.x));
+    horizontalDraggingLine.setAttribute("y1", String(centerXY.y));
+    horizontalDraggingLine.setAttribute("y2", String(centerXY.y));
+
+    if (type === "touchend" || type === "touchcancel" || type === "touchleave" || type === "mouseup") {
+      // drag ended
+      draggingLines.style.display = "none";
+      var board : number = 0;
+      if (col > 9){
+        col = col - 10;
+        board = 1;
+      }
+      log.info("Targeted row: " + row + " and column: " + col);
+      cellClicked(row,col,board);
+      //dragDone(row, col);
+    }
+  }
+
+  function getSquareCenterXY(row:number, col:number) {
+    var size = getSquareWidthHeight();
+    return {
+      x: col * size.width + size.width / 2,
+      y: row * size.height + size.height / 2
+    };
+  }
+
+  function getSquareWidthHeight() {
+    return {
+      width: gameArea.clientWidth / colsNum,
+      height: gameArea.clientHeight / rowsNum
+    };
   }
 
   function animationEndedCallback() {
@@ -85,16 +153,16 @@ module game {
   }
 
   export function shouldShowImage(row: number, col: number, player: number): boolean {
-    let cell = state.board[1-player][row][col];
+    let cell = state.board.gameBoard[1-player][row][col];
     return cell !== "";
   }
 
   export function isPieceX(row: number, col: number, player: number): boolean {
-    return state.board[1-player][row][col] === 'X';
+    return state.board.gameBoard[1-player][row][col] === 'X';
   }
 
   export function isPieceO(row: number, col: number, player: number): boolean {
-    return state.board[1-player][row][col] === 'O';
+    return state.board.gameBoard[1-player][row][col] === 'O';
   }
 
   export function shouldSlowlyAppear(row: number, col: number): boolean {
@@ -107,7 +175,7 @@ module game {
     if (lastUpdateUI.turnIndexBeforeMove != 1-player || isComputerTurn){
       return false;
     }
-    return state.board[2+player][row][col] === 'X';
+    return state.board.gameBoard[2+player][row][col] === 'X';
   }
 }
 
