@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>TicTacToe</title>
-  <meta name="description" content="TicTacToe game">
+  <title>Battleship</title>
+  <meta name="description" content="Battleship game">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
   <!-- The crossorigin attribute controls, for scripts that are obtained from other origins, whether error information will be exposed. -->
@@ -35,7 +35,7 @@
         <div class="modal-header">
           <button type="button" class="close" ng-click="game.isHelpModalShown = false" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title" id="myModalLabel">
-            {{ 'RULES_OF_TICTACTOE' | translate }}
+            {{ 'RULES_OF_BATTLESHIP' | translate }}
           </h4>
         </div>
         <div class="modal-body">
@@ -64,6 +64,18 @@
                 </tr>
               </table>
             </slide>
+            <slide>
+              <table>
+                <tr>
+                  <td>
+                  {{ 'RULES_SLIDE3' | translate }}
+                  </td>
+                  <td>
+                    <img src="imgs/HelpSlide2.png" style="height:100px;">
+                  </td>
+                </tr>
+              </table>
+            </slide>
           </carousel>
         </div>
         <div class="modal-footer">
@@ -77,37 +89,63 @@
 
 <div id="gameArea">
 
-  <div ng-repeat="row in [0, 1, 2]"
-      style="position:absolute; top:{{row * 33}}%; left:0; width:100%; height:33%;">
-    <div ng-repeat="col in [0, 1, 2]"
-        style="position:absolute; top:0; left:{{col * 33}}%; width:33%; height:100%;"
-        ng-class="{r: col < 2, b: row < 2}"
-        ng-click="game.cellClicked(row, col)"
-        id="{{'e2e_test_div_' + row + 'x' + col}}">
-      <div style="width:100%; height: 100%"
-          ng-class="{slowlyAppear: game.shouldSlowlyAppear(row, col)}"
-          ng-show="game.shouldShowImage(row, col)">
-        <svg ng-show="game.isPieceO(row, col)"
-            id="{{'e2e_test_pieceO_' + row + 'x' + col}}"
-            width="100%" height="100%">
-          <circle cx="50%" cy="50%" r="27%"
-            stroke="blue" stroke-width="5%" fill="white" />
-        </svg>
-        <svg ng-show="game.isPieceX(row, col)"
-            id="{{'e2e_test_pieceX_' + row + 'x' + col}}"
-            width="100%" height="100%">
-          <line x1="25%" y1="25%"
-                x2="75%" y2="75%"
-                stroke="red"
-                stroke-width="5%"/>
-          <line x1="25%" y1="75%"
-                x2="75%" y2="25%"
-                stroke="red"
-                stroke-width="5%"/>
-        </svg>
+  <div id="boardArea" style="position:absolute; width:100%; height:50%; top:25%">
+    <!-- <div style="position:absolute; top:10%; width: 100%; height: 10%; background-color: lightgrey;">
+      <p>
+        It's Player 1's turn!
+      </p>
+    </div> -->
+    <svg id="{{'draggingLines'}}" width="100%" height="100%"
+        style="display:inline; position:absolute; z-index: 30;">
+      <line id="{{'horizontalDraggingLine'}}"
+            x1="0" y1="5%"
+            x2="100%" y2="5%"
+            stroke="red"
+            stroke-width="1%"/>
+      <line id="{{'verticalDraggingLine'}}"
+            y1="0" x1="2.5%"
+            y2="100%" x2="2.5%"
+            stroke="red"
+            stroke-width="1%"/>
+    </svg>
+    <div ng-repeat="board in [0, 1]"
+        style="position:absolute; left:{{board * 50}}%; width:50%; height:100%;
+          border-style: solid; border-color:red;"
+        id="{{'playerBoard_' + board}}">
+      <div ng-repeat="row in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"
+          style="position:absolute; top:{{row * 10}}%; left:0; width:100%; height:10%;">
+        <div ng-repeat="col in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"
+            style="position:absolute; top:0; left:{{col * 10}}%; width:10%; height:100%;"
+            ng-class="{r: col < 9, b: row < 9, 'battleship': game.isBattleship(row,col,board), 'sea': !game.isBattleship(row,col,board)}"
+            ng-click="game.cellClicked(row, col, board)"
+            id="{{'e2e_test_div_' + board + ':' + row + 'x' + col}}">
+          <div style="width:100%; height: 100%"
+              ng-class="{slowlyAppear: game.shouldSlowlyAppear(row, col)}"
+              ng-show="game.shouldShowImage(row, col, board)">
+            <svg ng-show="game.isPieceO(row, col, board)"
+                id="{{'e2e_test_pieceO_' + board + ':' + row + 'x' + col}}"
+                width="100%" height="100%">
+              <circle cx="50%" cy="50%" r="27%"
+                stroke="blue" stroke-width="5%" fill="white" />
+            </svg>
+            <svg ng-show="game.isPieceX(row, col, board)"
+                id="{{'e2e_test_pieceX_' + board + ':' + row + 'x' + col}}"
+                width="100%" height="100%">
+              <line x1="25%" y1="25%"
+                    x2="75%" y2="75%"
+                    stroke="red"
+                    stroke-width="5%"/>
+              <line x1="25%" y1="75%"
+                    x2="75%" y2="25%"
+                    stroke="red"
+                    stroke-width="5%"/>
+            </svg>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+
 </div>
 
 </body>

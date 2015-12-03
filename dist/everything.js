@@ -1,5 +1,7 @@
 var gameLogic;
 (function (gameLogic) {
+    gameLogic.ROWS = 10;
+    gameLogic.COLS = 10;
     /** Returns the initial TicTacToe board, which is a 3x3 matrix containing ''. */
     // export function getInitialBoard(): Board {
     //   return [['', '', ''],
@@ -10,48 +12,69 @@ var gameLogic;
     // ship board
     // }
     function getInitialBoard() {
-        return [
-            [['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', '']],
-            [['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', '']],
-            [['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', 'X', '']],
-            [['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', '', 'X', '']]
-        ];
+        return { "gameBoard": [
+                [['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', '']],
+                [['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', '']],
+                // [['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','','']],
+                // [['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','',''],
+                // ['','','','','','','','','','']]
+                [['X', '', '', '', '', '', '', '', '', ''],
+                    ['X', '', '', '', '', '', '', '', '', ''],
+                    ['X', '', '', '', '', '', '', '', '', ''],
+                    ['X', '', '', '', '', '', '', '', '', ''],
+                    ['X', '', '', '', '', '', '', '', '', ''],
+                    ['', '', 'X', 'X', 'X', '', '', '', '', ''],
+                    ['', 'X', '', '', '', '', '', '', '', ''],
+                    ['', 'X', '', '', '', '', '', '', '', ''],
+                    ['', 'X', '', '', '', '', '', '', 'X', ''],
+                    ['', 'X', '', '', '', '', '', '', 'X', '']],
+                [['', '', '', '', '', '', '', '', '', ''],
+                    ['X', '', '', '', '', '', '', '', '', ''],
+                    ['X', '', '', '', '', '', '', '', '', ''],
+                    ['X', '', '', '', '', '', '', '', '', ''],
+                    ['X', '', '', '', '', '', '', '', '', ''],
+                    ['X', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', 'X', 'X', 'X', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['X', 'X', 'X', 'X', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', 'X', 'X']]
+            ],
+            "phase": 2 };
     }
     gameLogic.getInitialBoard = getInitialBoard;
     /**
@@ -92,18 +115,18 @@ var gameLogic;
         var P2 = true;
         for (var i = 0; i < 10; i++) {
             for (var j = 0; j < 10; j++) {
-                var cell1 = board[3][i][j];
-                var cell2 = board[0][i][j];
-                if (cell1 == 'X' && cell2 != 'X') {
+                var cell1 = board.gameBoard[3][i][j];
+                var cell2 = board.gameBoard[0][i][j];
+                if (cell1 == 'X' && cell2 != 'O') {
                     P1 = false;
                 }
             }
         }
         for (var i = 0; i < 10; i++) {
             for (var j = 0; j < 10; j++) {
-                var cell1 = board[2][i][j];
-                var cell2 = board[1][i][j];
-                if (cell1 == 'X' && cell2 != 'X') {
+                var cell1 = board.gameBoard[2][i][j];
+                var cell2 = board.gameBoard[1][i][j];
+                if (cell1 == 'X' && cell2 != 'O') {
                     P2 = false;
                 }
             }
@@ -119,23 +142,6 @@ var gameLogic;
         }
     }
     /**
-     * Returns all the possible moves for the given board and turnIndexBeforeMove.
-     * Returns an empty array if the game is over.
-     */
-    // export function getPossibleMoves(board: Board, turnIndexBeforeMove: number): IMove[] {
-    //   var possibleMoves: IMove[] = [];
-    //   for (var i = 0; i < 3; i++) {
-    //     for (var j = 0; j < 3; j++) {
-    //       try {
-    //         possibleMoves.push(createMove(board, i, j, turnIndexBeforeMove));
-    //       } catch (e) {
-    //         // The cell in that position was full.
-    //       }
-    //     }
-    //   }
-    //   return possibleMoves;
-    // }
-    /**
      * Returns the move that should be performed when player
      * with index turnIndexBeforeMove makes a move in cell row X col.
      */
@@ -144,28 +150,44 @@ var gameLogic;
             // Initially (at the beginning of the match), the board in state is undefined.
             board = getInitialBoard();
         }
-        if (board[turnIndexBeforeMove][row][col] !== '') {
-            throw new Error("One can only make a move in an empty position!");
-        }
-        if (getWinner(board, turnIndexBeforeMove) !== '') {
-            throw new Error("Can only make a move if the game is not over!");
-        }
-        var boardAfterMove = angular.copy(board);
-        boardAfterMove[turnIndexBeforeMove][row][col] = 'X';
-        var winner = getWinner(boardAfterMove, turnIndexBeforeMove);
-        var firstOperation;
-        if (winner !== '') {
-            // Game over.
-            firstOperation = { endMatch: { endMatchScores: winner === 'P1' ? [1, 0] : [0, 1] } };
+        if (board.phase === 1) {
+            var boardAfterMove = angular.copy(board);
+            boardAfterMove.gameBoard[3 - turnIndexBeforeMove][row][col] = 'X';
+            var firstOperation = { setTurn: { turnIndex: 1 - turnIndexBeforeMove } };
+            var delta = { row: row, col: col };
+            return [firstOperation,
+                { set: { key: 'board', value: boardAfterMove } },
+                { set: { key: 'delta', value: delta } }];
         }
         else {
-            // Game continues. Now it's the opponent's turn (the turn switches from 0 to 1 and 1 to 0).
-            firstOperation = { setTurn: { turnIndex: 1 - turnIndexBeforeMove } };
+            if (board.gameBoard[turnIndexBeforeMove][row][col] !== '') {
+                throw new Error("One can only make a move in an empty position!");
+            }
+            if (getWinner(board, turnIndexBeforeMove) !== '') {
+                throw new Error("Can only make a move if the game is not over!");
+            }
+            var boardAfterMove = angular.copy(board);
+            if (boardAfterMove.gameBoard[3 - turnIndexBeforeMove][row][col] === 'X') {
+                boardAfterMove.gameBoard[turnIndexBeforeMove][row][col] = 'O';
+            }
+            else {
+                boardAfterMove.gameBoard[turnIndexBeforeMove][row][col] = 'X';
+            }
+            var winner = getWinner(boardAfterMove, turnIndexBeforeMove);
+            var firstOperation;
+            if (winner !== '') {
+                // Game over.
+                firstOperation = { endMatch: { endMatchScores: winner === 'P1' ? [1, 0] : [0, 1] } };
+            }
+            else {
+                // Game continues. Now it's the opponent's turn (the turn switches from 0 to 1 and 1 to 0).
+                firstOperation = { setTurn: { turnIndex: 1 - turnIndexBeforeMove } };
+            }
+            var delta = { row: row, col: col };
+            return [firstOperation,
+                { set: { key: 'board', value: boardAfterMove } },
+                { set: { key: 'delta', value: delta } }];
         }
-        var delta = { row: row, col: col };
-        return [firstOperation,
-            { set: { key: 'board', value: boardAfterMove } },
-            { set: { key: 'delta', value: delta } }];
     }
     gameLogic.createMove = createMove;
     function isMoveOk(params) {
@@ -209,8 +231,18 @@ var gameLogic;
     var lastUpdateUI = null;
     var state = null;
     game.isHelpModalShown = false;
+    var draggingPiece;
+    var gameArea;
+    var realGameArea;
+    var draggingLines;
+    var verticalDraggingLine;
+    var horizontalDraggingLine;
+    var draggingSquare;
+    var rowsNum = 10;
+    var colsNum = 20;
+    var ship = 0;
     function init() {
-        console.log("Translation of 'RULES_OF_TICTACTOE' is " + translate('RULES_OF_TICTACTOE'));
+        console.log("Translation of 'RULES_OF_BATTLESHIP' is " + translate('RULES_OF_BATTLESHIP'));
         resizeGameAreaService.setWidthToHeight(1);
         gameService.setGame({
             minNumberOfPlayers: 2,
@@ -222,8 +254,59 @@ var gameLogic;
         document.addEventListener("animationend", animationEndedCallback, false); // standard
         document.addEventListener("webkitAnimationEnd", animationEndedCallback, false); // WebKit
         document.addEventListener("oanimationend", animationEndedCallback, false); // Opera
+        dragAndDropService.addDragListener("boardArea", handleDragEvent);
     }
     game.init = init;
+    function handleDragEvent(type, clientX, clientY) {
+        gameArea = document.getElementById("boardArea");
+        realGameArea = document.getElementById("gameArea");
+        draggingLines = document.getElementById("draggingLines");
+        verticalDraggingLine = document.getElementById("verticalDraggingLine");
+        horizontalDraggingLine = document.getElementById("horizontalDraggingLine");
+        draggingSquare = null;
+        // Center point in gameArea
+        var x = clientX - realGameArea.offsetLeft;
+        var y = clientY - Math.floor(gameArea.offsetTop + gameArea.offsetTop * 0.05);
+        // Is outside gameArea?
+        if (x < 0 || y < 0 || x >= gameArea.clientWidth || y >= gameArea.clientHeight) {
+            draggingLines.style.display = "none";
+            return;
+        }
+        draggingLines.style.display = "inline";
+        // Inside gameArea. Let's find the containing square's row and col
+        var col = Math.floor(colsNum * x / gameArea.clientWidth);
+        var row = Math.floor(rowsNum * y / gameArea.clientHeight);
+        var centerXY = getSquareCenterXY(row, col);
+        verticalDraggingLine.setAttribute("x1", String(centerXY.x));
+        verticalDraggingLine.setAttribute("x2", String(centerXY.x));
+        horizontalDraggingLine.setAttribute("y1", String(centerXY.y));
+        horizontalDraggingLine.setAttribute("y2", String(centerXY.y));
+        if (type === "touchend" || type === "touchcancel" || type === "touchleave" || type === "mouseup") {
+            // drag ended
+            draggingLines.style.display = "none";
+            var board = 0;
+            if (col > 9) {
+                col = col - 10;
+                board = 1;
+            }
+            log.info("Targeted row: " + row + " and column: " + col);
+            cellClicked(row, col, board);
+        }
+    }
+    game.handleDragEvent = handleDragEvent;
+    function getSquareCenterXY(row, col) {
+        var size = getSquareWidthHeight();
+        return {
+            x: col * size.width + size.width / 2,
+            y: row * size.height + size.height / 2
+        };
+    }
+    function getSquareWidthHeight() {
+        return {
+            width: gameArea.clientWidth / colsNum,
+            height: gameArea.clientHeight / rowsNum
+        };
+    }
     function animationEndedCallback() {
         $rootScope.$apply(function () {
             log.info("Animation ended");
@@ -237,12 +320,12 @@ var gameLogic;
         gameService.makeMove(aiService.findComputerMove(lastUpdateUI));
     }
     function updateUI(params) {
+        log.info("Game got updateUI:", params);
         animationEnded = false;
         lastUpdateUI = params;
         state = params.stateAfterMove;
         if (!state.board) {
             state.board = gameLogic.getInitialBoard();
-            console.log(state.board);
         }
         canMakeMove = params.turnIndexAfterMove >= 0 &&
             params.yourPlayerIndex === params.turnIndexAfterMove; // it's my turn
@@ -263,21 +346,16 @@ var gameLogic;
             }
         }
     }
-    function cellClicked(row, col) {
-        log.info(["Clicked on cell:", row, col]);
+    function cellClicked(row, col, board) {
+        log.info("Clicked on board:", board, "Clicked on cell:", row, col);
         if (window.location.search === '?throwException') {
             throw new Error("Throwing the error because URL has '?throwException'");
         }
-        if (!canMakeMove) {
+        if (!canMakeMove || lastUpdateUI.turnIndexAfterMove != 1 - board) {
             return;
         }
         try {
-<<<<<<< HEAD
-            var move = gameLogic.createMove(state.board, row, col, turnIndex);
-            console.log(move);
-=======
             var move = gameLogic.createMove(state.board, row, col, lastUpdateUI.turnIndexAfterMove);
->>>>>>> yoav-zibin/gh-pages
             canMakeMove = false; // to prevent making another move
             gameService.makeMove(move);
         }
@@ -287,17 +365,17 @@ var gameLogic;
         }
     }
     game.cellClicked = cellClicked;
-    function shouldShowImage(row, col) {
-        var cell = state.board[row][col];
+    function shouldShowImage(row, col, player) {
+        var cell = state.board.gameBoard[1 - player][row][col];
         return cell !== "";
     }
     game.shouldShowImage = shouldShowImage;
-    function isPieceX(row, col) {
-        return state.board[row][col] === 'X';
+    function isPieceX(row, col, player) {
+        return state.board.gameBoard[1 - player][row][col] === 'X';
     }
     game.isPieceX = isPieceX;
-    function isPieceO(row, col) {
-        return state.board[row][col] === 'O';
+    function isPieceO(row, col, player) {
+        return state.board.gameBoard[1 - player][row][col] === 'O';
     }
     game.isPieceO = isPieceO;
     function shouldSlowlyAppear(row, col) {
@@ -306,23 +384,33 @@ var gameLogic;
             state.delta.row === row && state.delta.col === col;
     }
     game.shouldSlowlyAppear = shouldSlowlyAppear;
+    function isBattleship(row, col, player) {
+        if (lastUpdateUI.turnIndexBeforeMove != 1 - player || isComputerTurn) {
+            return false;
+        }
+        return state.board.gameBoard[2 + player][row][col] === 'X';
+    }
+    game.isBattleship = isBattleship;
 })(game || (game = {}));
-angular.module('myApp', ['ngTouch', 'ui.bootstrap'])
-    .run(['initGameServices', function (initGameServices) {
-        $rootScope['game'] = game;
-        translate.setLanguage('en', {
-            RULES_OF_TICTACTOE: "Rules of TicTacToe",
-            RULES_SLIDE1: "You and your opponent take turns to mark the grid in an empty spot. The first mark is X, then O, then X, then O, etc.",
-            RULES_SLIDE2: "The first to mark a whole row, column or diagonal wins.",
-            CLOSE: "Close"
-        });
-        game.init();
-    }]);
+angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
+    .run(function () {
+    $rootScope['game'] = game;
+    translate.setLanguage('en', {
+        RULES_OF_BATTLESHIP: "Rules of Battleship",
+        RULES_SLIDE1: "First, you and your opponent place your 5 battleships on your own board.",
+        RULES_SLIDE2: "You and your opponent then take turns to fire upon the enemy board. If you hit an enemy battleship, you will score a X. If you miss, you will score a O.",
+        RULES_SLIDE3: "The first player to eliminate all opposing battleships is declared the winner.",
+        // RULES_SLIDE1: "You and your opponent take turns to mark the grid in an empty spot. The first mark is X, then O, then X, then O, etc.",
+        // RULES_SLIDE2: "The first to mark a whole row, column or diagonal wins.",
+        CLOSE: "Close"
+    });
+    game.init();
+});
 ;var aiService;
 (function (aiService) {
     /** Returns the move that the computer player should do for the given updateUI. */
     function findComputerMove(updateUI) {
-        return createComputerMove(updateUI.stateAfterMove.board, updateUI.turnIndexAfterMove,
+        return createComputerMove(updateUI.stateAfterMove.board, updateUI.turnIndexAfterMove, 
         // at most 1 second for the AI to choose a move (but might be much quicker)
         { millisecondsLimit: 1000 });
     }
@@ -345,6 +433,46 @@ angular.module('myApp', ['ngTouch', 'ui.bootstrap'])
         return possibleMoves;
     }
     aiService.getPossibleMoves = getPossibleMoves;
+    function scoreMoves(moves, turnIndexBeforeMove) {
+        var scoredMoves = [];
+        var bestMoves = [];
+        var max = 0;
+        for (var i = 0; i < moves.length; i++) {
+            scoredMoves[i] = getScoredMove(moves[i], turnIndexBeforeMove);
+            if (scoredMoves[i] == max) {
+                bestMoves.push(moves[i]);
+            }
+            else if (scoredMoves[i] > max) {
+                bestMoves = [];
+                bestMoves.push(moves[i]);
+            }
+        }
+        var randomMove = Math.floor(Math.random() * bestMoves.length);
+        return bestMoves[randomMove];
+    }
+    aiService.scoreMoves = scoreMoves;
+    function getScoredMove(move, turnIndexBeforeMove) {
+        var scoredMove = 0;
+        var board = move[1].set.value;
+        var delta = move[2].set.value;
+        var row = delta.row;
+        var col = delta.col;
+        scoredMove += checkHit(board, row + 1, col, turnIndexBeforeMove);
+        scoredMove += checkHit(board, row - 1, col, turnIndexBeforeMove);
+        scoredMove += checkHit(board, row, col + 1, turnIndexBeforeMove);
+        scoredMove += checkHit(board, row, col - 1, turnIndexBeforeMove);
+        return scoredMove;
+    }
+    aiService.getScoredMove = getScoredMove;
+    function checkHit(board, row, column, turnIndexBeforeMove) {
+        if (row > 9 || column > 9 || row < 0 || column < 0) {
+            return 0;
+        }
+        if (board[turnIndexBeforeMove][row][column] === 'O') {
+            return 1;
+        }
+        return 0;
+    }
     /**
      * Returns the move that the computer player should do for the given board.
      * alphaBetaLimits is an object that sets a limit on the alpha-beta search,
@@ -357,24 +485,24 @@ angular.module('myApp', ['ngTouch', 'ui.bootstrap'])
         // 0) endMatch or setTurn
         // 1) {set: {key: 'board', value: ...}}
         // 2) {set: {key: 'delta', value: ...}}]
-        return alphaBetaService.alphaBetaDecision([null, { set: { key: 'board', value: board } }], playerIndex, getNextStates, getStateScoreForIndex0,
-        // If you want to see debugging output in the console, then surf to index.html?debug
-        window.location.search === '?debug' ? getDebugStateToString : null, alphaBetaLimits);
+        // return alphaBetaService.alphaBetaDecision(
+        //     [null, {set: {key: 'board', value: board}}],
+        //     playerIndex, getNextStates, getStateScoreForIndex0,
+        //     // If you want to see debugging output in the console, then surf to index.html?debug
+        //     window.location.search === '?debug' ? getDebugStateToString : null,
+        //     alphaBetaLimits);
+        return randomGuess(getPossibleMoves(board, playerIndex));
     }
     aiService.createComputerMove = createComputerMove;
-    function getStateScoreForIndex0(move, playerIndex) {
-        if (move[0].endMatch) {
-            var endMatchScores = move[0].endMatch.endMatchScores;
-            return endMatchScores[0] > endMatchScores[1] ? Number.POSITIVE_INFINITY
-                : endMatchScores[0] < endMatchScores[1] ? Number.NEGATIVE_INFINITY
-                    : 0;
-        }
-        return 0;
+    function randomGuess(possibleMoves) {
+        var finalMove;
+        var randomMove = Math.floor(Math.random() * possibleMoves.length);
+        finalMove = possibleMoves[randomMove];
+        //console.log(possibleMoves.length);
+        // for (var possibleMove in possibleMoves){
+        //
+        // }
+        return finalMove;
     }
-    function getNextStates(move, playerIndex) {
-        return getPossibleMoves(move[1].set.value, playerIndex);
-    }
-    function getDebugStateToString(move) {
-        return "\n" + move[1].set.value.join("\n") + "\n";
-    }
+    aiService.randomGuess = randomGuess;
 })(aiService || (aiService = {}));
