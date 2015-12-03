@@ -60,7 +60,7 @@ var aiService;
         if (row > 9 || column > 9 || row < 0 || column < 0) {
             return 0;
         }
-        if (board[turnIndexBeforeMove][row][column] === 'O') {
+        if (board.gameBoard[turnIndexBeforeMove][row][column] === 'O') {
             return 1;
         }
         return 0;
