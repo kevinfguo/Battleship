@@ -33,50 +33,49 @@ var gameLogic;
                     ['', '', '', '', '', '', '', '', '', ''],
                     ['', '', '', '', '', '', '', '', '', ''],
                     ['', '', '', '', '', '', '', '', '', '']],
-                // [['','','','','','','','','',''],
-                // ['','','','','','','','','',''],
-                // ['','','','','','','','','',''],
-                // ['','','','','','','','','',''],
-                // ['','','','','','','','','',''],
-                // ['','','','','','','','','',''],
-                // ['','','','','','','','','',''],
-                // ['','','','','','','','','',''],
-                // ['','','','','','','','','',''],
-                // ['','','','','','','','','','']],
-                // [['','','','','','','','','',''],
-                // ['','','','','','','','','',''],
-                // ['','','','','','','','','',''],
-                // ['','','','','','','','','',''],
-                // ['','','','','','','','','',''],
-                // ['','','','','','','','','',''],
-                // ['','','','','','','','','',''],
-                // ['','','','','','','','','',''],
-                // ['','','','','','','','','',''],
-                // ['','','','','','','','','','']]
-                [['X', '', '', '', '', '', '', '', '', ''],
-                    ['X', '', '', '', '', '', '', 'X', 'X', 'X'],
-                    ['X', '', '', '', '', '', '', '', '', ''],
-                    ['X', '', '', '', '', '', '', '', '', ''],
-                    ['X', '', '', '', '', '', '', '', '', ''],
-                    ['', '', 'X', 'X', 'X', '', '', '', '', ''],
-                    ['', 'X', '', '', '', '', '', '', '', ''],
-                    ['', 'X', '', '', '', '', '', '', '', ''],
-                    ['', 'X', '', '', '', '', '', '', 'X', ''],
-                    ['', 'X', '', '', '', '', '', '', 'X', '']],
-                [['', '', '', '', '', 'X', '', '', '', ''],
-                    ['X', '', '', '', '', 'X', '', '', '', ''],
-                    ['X', '', '', '', '', 'X', '', '', '', ''],
-                    ['X', '', '', '', '', '', '', '', '', ''],
-                    ['X', '', '', '', '', '', '', '', '', ''],
-                    ['X', '', '', '', '', '', '', '', '', ''],
-                    ['', '', '', '', '', 'X', 'X', 'X', '', ''],
+                [['', '', '', '', '', '', '', '', '', ''],
                     ['', '', '', '', '', '', '', '', '', ''],
-                    ['X', 'X', 'X', 'X', '', '', '', '', '', ''],
-                    ['', '', '', '', '', '', '', '', 'X', 'X']]
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', '']],
+                [['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', '', '', '']]
             ],
-            "phase": 2 };
+            "phase": 0 };
     }
     gameLogic.getInitialBoard = getInitialBoard;
+    function getGamePhase(board) {
+        return board.phase;
+    }
+    gameLogic.getGamePhase = getGamePhase;
+    function getShipLength(phase) {
+        if (phase == 0 || phase == 5) {
+            return 5;
+        }
+        else if (phase == 1 || phase == 6) {
+            return 4;
+        }
+        else if (phase == 2 || phase == 3 || phase == 7 || phase == 8) {
+            return 3;
+        }
+        else if (phase == 4 || phase == 9) {
+            return 2;
+        }
+    }
+    gameLogic.getShipLength = getShipLength;
     /**
      * Returns true if the game ended in a tie because there are no empty cells.
      * E.g., isTie returns true for the following board:
@@ -145,16 +144,71 @@ var gameLogic;
      * Returns the move that should be performed when player
      * with index turnIndexBeforeMove makes a move in cell row X col.
      */
-    function createMove(board, row, col, turnIndexBeforeMove) {
+    function createMove(board, row, col, direction, turnIndexBeforeMove) {
         if (!board) {
             // Initially (at the beginning of the match), the board in state is undefined.
             board = getInitialBoard();
         }
-        if (board.phase === 1) {
+        if (board.phase === 0 || board.phase === 1 || board.phase === 2 || board.phase === 3 || board.phase === 4) {
             var boardAfterMove = angular.copy(board);
-            boardAfterMove.gameBoard[3 - turnIndexBeforeMove][row][col] = 'X';
-            var firstOperation = { setTurn: { turnIndex: 1 - turnIndexBeforeMove } };
-            var delta = { row: row, col: col };
+            var firstOperation = { setTurn: { turnIndex: 0 } };
+            var delta = { row: row, col: col, direction: direction };
+            if (direction == 0) {
+                for (var i = 0; i < getShipLength(board.phase); i++) {
+                    boardAfterMove.gameBoard[2 + turnIndexBeforeMove][row][col + i] = 'X';
+                }
+            }
+            else if (direction == 1) {
+                for (var i = 0; i < getShipLength(board.phase); i++) {
+                    boardAfterMove.gameBoard[2 + turnIndexBeforeMove][row + i][col] = 'X';
+                }
+            }
+            else if (direction == 2) {
+                for (var i = 0; i < getShipLength(board.phase); i++) {
+                    boardAfterMove.gameBoard[2 + turnIndexBeforeMove][row][col - i] = 'X';
+                }
+            }
+            else if (direction == 3) {
+                for (var i = 0; i < getShipLength(board.phase); i++) {
+                    boardAfterMove.gameBoard[2 + turnIndexBeforeMove][row - i][col] = 'X';
+                }
+            }
+            boardAfterMove.phase = board.phase + 1;
+            if (boardAfterMove.phase == 5) {
+                firstOperation = { setTurn: { turnIndex: 1 } };
+            }
+            return [firstOperation,
+                { set: { key: 'board', value: boardAfterMove } },
+                { set: { key: 'delta', value: delta } }];
+        }
+        else if (board.phase === 5 || board.phase === 6 || board.phase === 7 || board.phase === 8 || board.phase === 9) {
+            var boardAfterMove = angular.copy(board);
+            var firstOperation = { setTurn: { turnIndex: 1 } };
+            var delta = { row: row, col: col, direction: direction };
+            if (direction == 0) {
+                for (var i = 0; i < getShipLength(board.phase); i++) {
+                    boardAfterMove.gameBoard[2 + turnIndexBeforeMove][row][col + i] = 'X';
+                }
+            }
+            else if (direction == 1) {
+                for (var i = 0; i < getShipLength(board.phase); i++) {
+                    boardAfterMove.gameBoard[2 + turnIndexBeforeMove][row + i][col] = 'X';
+                }
+            }
+            else if (direction == 2) {
+                for (var i = 0; i < getShipLength(board.phase); i++) {
+                    boardAfterMove.gameBoard[2 + turnIndexBeforeMove][row][col - i] = 'X';
+                }
+            }
+            else if (direction == 3) {
+                for (var i = 0; i < getShipLength(board.phase); i++) {
+                    boardAfterMove.gameBoard[2 + turnIndexBeforeMove][row - i][col] = 'X';
+                }
+            }
+            boardAfterMove.phase = board.phase + 1;
+            if (boardAfterMove.phase == 10) {
+                firstOperation = { setTurn: { turnIndex: 0 } };
+            }
             return [firstOperation,
                 { set: { key: 'board', value: boardAfterMove } },
                 { set: { key: 'delta', value: delta } }];
@@ -183,7 +237,7 @@ var gameLogic;
                 // Game continues. Now it's the opponent's turn (the turn switches from 0 to 1 and 1 to 0).
                 firstOperation = { setTurn: { turnIndex: 1 - turnIndexBeforeMove } };
             }
-            var delta = { row: row, col: col };
+            var delta = { row: row, col: col, direction: direction };
             return [firstOperation,
                 { set: { key: 'board', value: boardAfterMove } },
                 { set: { key: 'delta', value: delta } }];
@@ -209,8 +263,9 @@ var gameLogic;
             var deltaValue = move[2].set.value;
             var row = deltaValue.row;
             var col = deltaValue.col;
+            var direction = deltaValue.direction;
             var board = stateBeforeMove.board;
-            var expectedMove = createMove(board, row, col, turnIndexBeforeMove);
+            var expectedMove = createMove(board, row, col, direction, turnIndexBeforeMove);
             if (!angular.equals(move, expectedMove)) {
                 return false;
             }
@@ -240,7 +295,11 @@ var gameLogic;
     var draggingSquare;
     var rowsNum = 10;
     var colsNum = 20;
-    var ship = 0;
+    var ship = 5;
+    var startRow;
+    var startCol;
+    var startBoard;
+    var direction = 0;
     function init() {
         console.log("Translation of 'RULES_OF_BATTLESHIP' is " + translate('RULES_OF_BATTLESHIP'));
         resizeGameAreaService.setWidthToHeight(2);
@@ -281,19 +340,180 @@ var gameLogic;
         verticalDraggingLine.setAttribute("x2", String(centerXY.x));
         horizontalDraggingLine.setAttribute("y1", String(centerXY.y));
         horizontalDraggingLine.setAttribute("y2", String(centerXY.y));
-        if (type === "touchend" || type === "touchcancel" || type === "touchleave" || type === "mouseup") {
-            // drag ended
-            draggingLines.style.display = "none";
-            var board = 0;
-            if (col > 9) {
-                col = col - 10;
-                board = 1;
+        var board = 0;
+        if (col > 9) {
+            col = col - 10;
+            board = 1;
+        }
+        var phase = gameLogic.getGamePhase(state.board);
+        if (phase < 10) {
+            var shipLength = gameLogic.getShipLength(phase);
+            if (type === "touchstart") {
+                //log.info("Targeted row: " + row + " and column: " + col);
+                direction = 0;
+                startBoard = board;
+                startRow = row;
+                startCol = col;
+                if (isValidConfig(shipLength, board, startRow, startCol, direction)) {
+                    makeBattleShip(shipLength, board, row, col, direction);
+                }
             }
-            log.info("Targeted row: " + row + " and column: " + col);
-            cellClicked(row, col, board);
+            else if (type === "touchmove") {
+                //log.info("Targeted row: " + row + " and column: " + col);
+                if (row > startRow) {
+                    direction = 1;
+                }
+                else if (col > startCol) {
+                    direction = 0;
+                }
+                else if (col < startCol) {
+                    direction = 2;
+                }
+                else if (row < startRow) {
+                    direction = 3;
+                }
+                reDraw();
+                if (isValidConfig(shipLength, board, startRow, startCol, direction)) {
+                    makeBattleShip(shipLength, board, startRow, startCol, direction);
+                }
+            }
+            else if (type === "touchend" || type === "touchcancel" || type === "touchleave" || type === "mouseup") {
+                // drag ended
+                draggingLines.style.display = "none";
+                //log.info("Ended on row: " + row + " and column: " + col);
+                if (isValidConfig(shipLength, board, startRow, startCol, direction)) {
+                    cellClicked(startRow, startCol, board, direction, phase);
+                }
+            }
+        }
+        else {
+            if (type === "touchend" || type === "touchcancel" || type === "touchleave" || type === "mouseup") {
+                // drag ended
+                draggingLines.style.display = "none";
+                cellClicked(row, col, board, direction, phase);
+            }
         }
     }
     game.handleDragEvent = handleDragEvent;
+    function isValidConfig(shipLength, board, row, col, direction) {
+        var phase = gameLogic.getGamePhase(state.board);
+        if (board != startBoard || (phase < 5 && board != 0) || (phase > 4 && phase < 10 && board != 1)) {
+            return false;
+        }
+        if (direction == 0) {
+            if (col + shipLength <= 10) {
+                for (var i = 0; i < shipLength; i++) {
+                    if (isBattleship(row, col + i, board, phase)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        else if (direction == 1) {
+            if (row + shipLength <= 10) {
+                for (var i = 0; i < shipLength; i++) {
+                    if (isBattleship(row + i, col, board, phase)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        else if (direction == 2) {
+            if (col - shipLength >= -1) {
+                for (var i = 0; i < shipLength; i++) {
+                    if (isBattleship(row, col - i, board, phase)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        else if (direction == 3) {
+            if (row - shipLength >= -1) {
+                for (var i = 0; i < shipLength; i++) {
+                    if (isBattleship(row - i, col, board, phase)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+    function reDraw() {
+        var phase = gameLogic.getGamePhase(state.board);
+        if (phase < 5) {
+            for (var board = 0; board < 2; board++) {
+                for (var i = 0; i < 10; i++) {
+                    for (var j = 0; j < 10; j++) {
+                        if (game.isBattleship(i, j, board, phase)) {
+                            document.getElementById("e2e_test_div_" + board + ":" + i + "x" + (j)).style.backgroundColor = "grey";
+                        }
+                        else {
+                            document.getElementById("e2e_test_div_" + board + ":" + i + "x" + (j)).style.backgroundColor = "#89CFF0";
+                        }
+                    }
+                }
+            }
+        }
+        else if (phase < 10) {
+            for (var board = 0; board < 2; board++) {
+                for (var i = 0; i < 10; i++) {
+                    for (var j = 0; j < 10; j++) {
+                        if (board == 0) {
+                            document.getElementById("e2e_test_div_" + board + ":" + i + "x" + (j)).style.backgroundColor = "#89CFF0";
+                        }
+                        else {
+                            if (game.isBattleship(i, j, board, phase)) {
+                                document.getElementById("e2e_test_div_" + board + ":" + i + "x" + (j)).style.backgroundColor = "grey";
+                            }
+                            else {
+                                document.getElementById("e2e_test_div_" + board + ":" + i + "x" + (j)).style.backgroundColor = "#89CFF0";
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            for (var board = 0; board < 2; board++) {
+                for (var i = 0; i < 10; i++) {
+                    for (var j = 0; j < 10; j++) {
+                        document.getElementById("e2e_test_div_" + board + ":" + i + "x" + (j)).style.backgroundColor = "#89CFF0";
+                    }
+                }
+            }
+        }
+    }
+    function makeBattleShip(shipLength, board, row, col, direction) {
+        //TODO Shield oob errors
+        if (direction == 0) {
+            for (var i = 0; i < shipLength; i++) {
+                draggingSquare = document.getElementById("e2e_test_div_" + board + ":" + row + "x" + (col + i));
+                draggingSquare.style.backgroundColor = "grey";
+            }
+        }
+        else if (direction == 1) {
+            for (var i = 0; i < shipLength; i++) {
+                draggingSquare = document.getElementById("e2e_test_div_" + board + ":" + (row + i) + "x" + (col));
+                draggingSquare.style.backgroundColor = "grey";
+            }
+        }
+        else if (direction == 2) {
+            for (var i = 0; i < shipLength; i++) {
+                draggingSquare = document.getElementById("e2e_test_div_" + board + ":" + row + "x" + (col - i));
+                draggingSquare.style.backgroundColor = "grey";
+            }
+        }
+        else if (direction == 3) {
+            for (var i = 0; i < shipLength; i++) {
+                draggingSquare = document.getElementById("e2e_test_div_" + board + ":" + (row - i) + "x" + (col));
+                draggingSquare.style.backgroundColor = "grey";
+            }
+        }
+    }
     function getSquareCenterXY(row, col) {
         var size = getSquareWidthHeight();
         return {
@@ -345,17 +565,22 @@ var gameLogic;
                 sendComputerMove();
             }
         }
+        if (state != null) {
+            if (gameLogic.getGamePhase(state.board) > 0) {
+                reDraw();
+            }
+        }
     }
-    function cellClicked(row, col, board) {
+    function cellClicked(row, col, board, direction, phase) {
         log.info("Clicked on board:", board, "Clicked on cell:", row, col);
         if (window.location.search === '?throwException') {
             throw new Error("Throwing the error because URL has '?throwException'");
         }
-        if (!canMakeMove || lastUpdateUI.turnIndexAfterMove != 1 - board) {
+        if (!canMakeMove || (phase == 10 && lastUpdateUI.turnIndexAfterMove != 1 - board) || (phase < 10 && lastUpdateUI.turnIndexAfterMove != board)) {
             return;
         }
         try {
-            var move = gameLogic.createMove(state.board, row, col, lastUpdateUI.turnIndexAfterMove);
+            var move = gameLogic.createMove(state.board, row, col, direction, lastUpdateUI.turnIndexAfterMove);
             canMakeMove = false; // to prevent making another move
             gameService.makeMove(move);
         }
@@ -384,13 +609,20 @@ var gameLogic;
             state.delta.row === row && state.delta.col === col;
     }
     game.shouldSlowlyAppear = shouldSlowlyAppear;
-    function isBattleship(row, col, player) {
-        if (lastUpdateUI.turnIndexBeforeMove != 1 - player || isComputerTurn) {
+    function isBattleship(row, col, player, phase) {
+        if ((phase == 10 && lastUpdateUI.turnIndexBeforeMove != 1 - player) || isComputerTurn) {
             return false;
         }
         return state.board.gameBoard[2 + player][row][col] === 'X';
     }
     game.isBattleship = isBattleship;
+    function isABattleship(row, col, player) {
+        if (lastUpdateUI.turnIndexBeforeMove != 1 - player || isComputerTurn) {
+            return false;
+        }
+        return state.board.gameBoard[2 + player][row][col] === 'X';
+    }
+    game.isABattleship = isABattleship;
 })(game || (game = {}));
 angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
     .run(function () {

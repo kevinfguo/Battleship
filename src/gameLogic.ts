@@ -2,6 +2,7 @@ type Board = {gameBoard: string[][][], phase: number};
 interface BoardDelta {
   row: number;
   col: number;
+  direction : number;
 }
 interface IState {
   board?: Board;
@@ -44,48 +45,64 @@ module gameLogic {
             ['','','','','','','','','',''],
             ['','','','','','','','','',''],
             ['','','','','','','','','','']],
-            // [['','','','','','','','','',''],
-            // ['','','','','','','','','',''],
-            // ['','','','','','','','','',''],
-            // ['','','','','','','','','',''],
-            // ['','','','','','','','','',''],
-            // ['','','','','','','','','',''],
-            // ['','','','','','','','','',''],
-            // ['','','','','','','','','',''],
-            // ['','','','','','','','','',''],
-            // ['','','','','','','','','','']],
-            // [['','','','','','','','','',''],
-            // ['','','','','','','','','',''],
-            // ['','','','','','','','','',''],
-            // ['','','','','','','','','',''],
-            // ['','','','','','','','','',''],
-            // ['','','','','','','','','',''],
-            // ['','','','','','','','','',''],
-            // ['','','','','','','','','',''],
-            // ['','','','','','','','','',''],
-            // ['','','','','','','','','','']]
-            [['X','','','','','','','','',''],
-            ['X','','','','','','','X','X','X'],
-            ['X','','','','','','','','',''],
-            ['X','','','','','','','','',''],
-            ['X','','','','','','','','',''],
-            ['','','X','X','X','','','','',''],
-            ['','X','','','','','','','',''],
-            ['','X','','','','','','','',''],
-            ['','X','','','','','','','X',''],
-            ['','X','','','','','','','X','']],
-            [['','','','','','X','','','',''],
-            ['X','','','','','X','','','',''],
-            ['X','','','','','X','','','',''],
-            ['X','','','','','','','','',''],
-            ['X','','','','','','','','',''],
-            ['X','','','','','','','','',''],
-            ['','','','','','X','X','X','',''],
+            [['','','','','','','','','',''],
             ['','','','','','','','','',''],
-            ['X','X','X','X','','','','','',''],
-            ['','','','','','','','','X','X']]
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','','']],
+            [['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','',''],
+            ['','','','','','','','','','']]
+            // [['X','','','','','','','','',''],
+            // ['X','','','','','','','X','X','X'],
+            // ['X','','','','','','','','',''],
+            // ['X','','','','','','','','',''],
+            // ['X','','','','','','','','',''],
+            // ['','','X','X','X','','','','',''],
+            // ['','X','','','','','','','',''],
+            // ['','X','','','','','','','',''],
+            // ['','X','','','','','','','X',''],
+            // ['','X','','','','','','','X','']],
+            // [['','','','','','X','','','',''],
+            // ['X','','','','','X','','','',''],
+            // ['X','','','','','X','','','',''],
+            // ['X','','','','','','','','',''],
+            // ['X','','','','','','','','',''],
+            // ['X','','','','','','','','',''],
+            // ['','','','','','X','X','X','',''],
+            // ['','','','','','','','','',''],
+            // ['X','X','X','X','','','','','',''],
+            // ['','','','','','','','','X','X']]
           ],
-        "phase":2};
+        "phase":0};
+  }
+
+  export function getGamePhase(board: Board) : number{
+    return board.phase;
+  }
+
+  export function getShipLength(phase: number){
+    if (phase == 0 || phase == 5){
+      return 5;
+    }else if (phase == 1 || phase == 6){
+      return 4;
+    }else if (phase == 2 || phase == 3 || phase == 7 || phase == 8){
+      return 3;
+    }else if (phase == 4 || phase == 9){
+      return 2;
+    }
   }
 
   /**
@@ -157,16 +174,64 @@ module gameLogic {
    * with index turnIndexBeforeMove makes a move in cell row X col.
    */
   export function createMove(
-      board: Board, row: number, col: number, turnIndexBeforeMove: number): IMove {
+      board: Board, row: number, col: number, direction: number, turnIndexBeforeMove: number): IMove {
     if (!board) {
       // Initially (at the beginning of the match), the board in state is undefined.
       board = getInitialBoard();
     }
-    if (board.phase === 1){
+    if (board.phase === 0 || board.phase === 1 || board.phase === 2 || board.phase === 3 || board.phase === 4){
       var boardAfterMove = angular.copy(board);
-      boardAfterMove.gameBoard[3-turnIndexBeforeMove][row][col] = 'X';
-      var firstOperation: IOperation = {setTurn: {turnIndex: 1 - turnIndexBeforeMove}};
-      var delta: BoardDelta = {row: row, col: col};
+      var firstOperation: IOperation = {setTurn: {turnIndex: 0}};
+      var delta: BoardDelta = {row: row, col: col, direction: direction};
+      if (direction == 0){
+        for (var i = 0; i < getShipLength(board.phase); i++){
+          boardAfterMove.gameBoard[2+turnIndexBeforeMove][row][col+i] = 'X';
+        }
+      }else if (direction == 1){
+        for (var i = 0; i < getShipLength(board.phase); i++){
+          boardAfterMove.gameBoard[2+turnIndexBeforeMove][row+i][col] = 'X';
+        }
+      }else if (direction == 2){
+        for (var i = 0; i < getShipLength(board.phase); i++){
+          boardAfterMove.gameBoard[2+turnIndexBeforeMove][row][col-i] = 'X';
+        }
+      }else if (direction == 3){
+        for (var i = 0; i < getShipLength(board.phase); i++){
+          boardAfterMove.gameBoard[2+turnIndexBeforeMove][row-i][col] = 'X';
+        }
+      }
+      boardAfterMove.phase = board.phase + 1;
+      if (boardAfterMove.phase == 5){
+        firstOperation = {setTurn: {turnIndex: 1}}
+      }
+      return [firstOperation,
+              {set: {key: 'board', value: boardAfterMove}},
+              {set: {key: 'delta', value: delta}}];
+    }else if (board.phase === 5 || board.phase === 6 || board.phase === 7 || board.phase === 8 || board.phase === 9){
+      var boardAfterMove = angular.copy(board);
+      var firstOperation: IOperation = {setTurn: {turnIndex: 1}};
+      var delta: BoardDelta = {row: row, col: col, direction: direction};
+      if (direction == 0){
+        for (var i = 0; i < getShipLength(board.phase); i++){
+          boardAfterMove.gameBoard[2+turnIndexBeforeMove][row][col+i] = 'X';
+        }
+      }else if (direction == 1){
+        for (var i = 0; i < getShipLength(board.phase); i++){
+          boardAfterMove.gameBoard[2+turnIndexBeforeMove][row+i][col] = 'X';
+        }
+      }else if (direction == 2){
+        for (var i = 0; i < getShipLength(board.phase); i++){
+          boardAfterMove.gameBoard[2+turnIndexBeforeMove][row][col-i] = 'X';
+        }
+      }else if (direction == 3){
+        for (var i = 0; i < getShipLength(board.phase); i++){
+          boardAfterMove.gameBoard[2+turnIndexBeforeMove][row-i][col] = 'X';
+        }
+      }
+      boardAfterMove.phase = board.phase + 1;
+      if (boardAfterMove.phase == 10){
+        firstOperation = {setTurn: {turnIndex: 0}}
+      }
       return [firstOperation,
               {set: {key: 'board', value: boardAfterMove}},
               {set: {key: 'delta', value: delta}}];
@@ -193,7 +258,7 @@ module gameLogic {
         // Game continues. Now it's the opponent's turn (the turn switches from 0 to 1 and 1 to 0).
         firstOperation = {setTurn: {turnIndex: 1 - turnIndexBeforeMove}};
       }
-      var delta: BoardDelta = {row: row, col: col};
+      var delta: BoardDelta = {row: row, col: col, direction: direction};
       return [firstOperation,
               {set: {key: 'board', value: boardAfterMove}},
               {set: {key: 'delta', value: delta}}];
@@ -220,8 +285,9 @@ module gameLogic {
       var deltaValue: BoardDelta = move[2].set.value;
       var row = deltaValue.row;
       var col = deltaValue.col;
+      var direction = deltaValue.direction;
       var board = stateBeforeMove.board;
-      var expectedMove = createMove(board, row, col, turnIndexBeforeMove);
+      var expectedMove = createMove(board, row, col, direction, turnIndexBeforeMove);
       if (!angular.equals(move, expectedMove)) {
         return false;
       }
