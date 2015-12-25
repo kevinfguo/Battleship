@@ -54,7 +54,8 @@ module.exports = function(grunt) {
             'dist/everything.min.js',
             'game.css',
             'imgs/HelpSlide1.png',
-            'imgs/HelpSlide2.png'
+            'imgs/HelpSlide2.png',
+            'imgs/HelpSlide3.png'
           ],
           network: [
             'dist/everything.min.js.map',

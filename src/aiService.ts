@@ -13,11 +13,12 @@ module aiService {
    * Returns an empty array if the game is over.
    */
   export function getPossibleMoves(board: Board, turnIndexBeforeMove: number): IMove[] {
+    //if (board.phase == )
     let possibleMoves: IMove[] = [];
     for (let i = 0; i < gameLogic.ROWS; i++) {
       for (let j = 0; j < gameLogic.COLS; j++) {
         try {
-          possibleMoves.push(gameLogic.createMove(board, i, j, turnIndexBeforeMove));
+          possibleMoves.push(gameLogic.createMove(board, i, j, 1, turnIndexBeforeMove));
         } catch (e) {
           // The cell in that position was full.
         }
@@ -96,6 +97,7 @@ module aiService {
     // for (var possibleMove in possibleMoves){
     //
     // }
+    log.info(finalMove);
     return finalMove;
   }
 

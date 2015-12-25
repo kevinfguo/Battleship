@@ -12,11 +12,12 @@ var aiService;
      * Returns an empty array if the game is over.
      */
     function getPossibleMoves(board, turnIndexBeforeMove) {
+        //if (board.phase == )
         var possibleMoves = [];
         for (var i = 0; i < gameLogic.ROWS; i++) {
             for (var j = 0; j < gameLogic.COLS; j++) {
                 try {
-                    possibleMoves.push(gameLogic.createMove(board, i, j, turnIndexBeforeMove));
+                    possibleMoves.push(gameLogic.createMove(board, i, j, 1, turnIndexBeforeMove));
                 }
                 catch (e) {
                 }
@@ -94,6 +95,7 @@ var aiService;
         // for (var possibleMove in possibleMoves){
         //
         // }
+        log.info(finalMove);
         return finalMove;
     }
     aiService.randomGuess = randomGuess;

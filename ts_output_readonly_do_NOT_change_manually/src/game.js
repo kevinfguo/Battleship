@@ -43,74 +43,76 @@ var game;
         verticalDraggingLine = document.getElementById("verticalDraggingLine");
         horizontalDraggingLine = document.getElementById("horizontalDraggingLine");
         draggingSquare = null;
-        // Center point in gameArea
-        var x = clientX - realGameArea.offsetLeft;
-        var y = clientY - Math.floor(gameArea.offsetTop + gameArea.offsetTop * 0.05);
-        // Is outside gameArea?
-        if (x < 0 || y < 0 || x >= gameArea.clientWidth || y >= gameArea.clientHeight) {
-            draggingLines.style.display = "none";
-            return;
-        }
-        draggingLines.style.display = "inline";
-        // Inside gameArea. Let's find the containing square's row and col
-        var col = Math.floor(colsNum * x / gameArea.clientWidth);
-        var row = Math.floor(rowsNum * y / gameArea.clientHeight);
-        var centerXY = getSquareCenterXY(row, col);
-        verticalDraggingLine.setAttribute("x1", String(centerXY.x));
-        verticalDraggingLine.setAttribute("x2", String(centerXY.x));
-        horizontalDraggingLine.setAttribute("y1", String(centerXY.y));
-        horizontalDraggingLine.setAttribute("y2", String(centerXY.y));
-        var board = 0;
-        if (col > 9) {
-            col = col - 10;
-            board = 1;
-        }
-        var phase = gameLogic.getGamePhase(state.board);
-        if (phase < 10) {
-            var shipLength = gameLogic.getShipLength(phase);
-            if (type === "touchstart") {
-                //log.info("Targeted row: " + row + " and column: " + col);
-                direction = 0;
-                startBoard = board;
-                startRow = row;
-                startCol = col;
-                if (isValidConfig(shipLength, board, startRow, startCol, direction)) {
-                    makeBattleShip(shipLength, board, row, col, direction);
-                }
+        if (canMakeMove) {
+            // Center point in gameArea
+            var x = clientX - realGameArea.offsetLeft;
+            var y = clientY - Math.floor(gameArea.offsetTop + gameArea.offsetTop * 0.05);
+            // Is outside gameArea?
+            if (x < 0 || y < 0 || x >= gameArea.clientWidth || y >= gameArea.clientHeight) {
+                draggingLines.style.display = "none";
+                return;
             }
-            else if (type === "touchmove") {
-                //log.info("Targeted row: " + row + " and column: " + col);
-                if (row > startRow) {
-                    direction = 1;
-                }
-                else if (col > startCol) {
+            draggingLines.style.display = "inline";
+            // Inside gameArea. Let's find the containing square's row and col
+            var col = Math.floor(colsNum * x / gameArea.clientWidth);
+            var row = Math.floor(rowsNum * y / gameArea.clientHeight);
+            var centerXY = getSquareCenterXY(row, col);
+            verticalDraggingLine.setAttribute("x1", String(centerXY.x));
+            verticalDraggingLine.setAttribute("x2", String(centerXY.x));
+            horizontalDraggingLine.setAttribute("y1", String(centerXY.y));
+            horizontalDraggingLine.setAttribute("y2", String(centerXY.y));
+            var board = 0;
+            if (col > 9) {
+                col = col - 10;
+                board = 1;
+            }
+            var phase = gameLogic.getGamePhase(state.board);
+            if (phase < 10) {
+                var shipLength = gameLogic.getShipLength(phase);
+                if (type === "touchstart") {
+                    //log.info("Targeted row: " + row + " and column: " + col);
                     direction = 0;
+                    startBoard = board;
+                    startRow = row;
+                    startCol = col;
+                    if (isValidConfig(shipLength, board, startRow, startCol, direction)) {
+                        makeBattleShip(shipLength, board, row, col, direction);
+                    }
                 }
-                else if (col < startCol) {
-                    direction = 2;
+                else if (type === "touchmove") {
+                    //log.info("Targeted row: " + row + " and column: " + col);
+                    if (row > startRow) {
+                        direction = 1;
+                    }
+                    else if (col > startCol) {
+                        direction = 0;
+                    }
+                    else if (col < startCol) {
+                        direction = 2;
+                    }
+                    else if (row < startRow) {
+                        direction = 3;
+                    }
+                    reDraw();
+                    if (isValidConfig(shipLength, board, startRow, startCol, direction)) {
+                        makeBattleShip(shipLength, board, startRow, startCol, direction);
+                    }
                 }
-                else if (row < startRow) {
-                    direction = 3;
-                }
-                reDraw();
-                if (isValidConfig(shipLength, board, startRow, startCol, direction)) {
-                    makeBattleShip(shipLength, board, startRow, startCol, direction);
+                else if (type === "touchend" || type === "touchcancel" || type === "touchleave" || type === "mouseup") {
+                    // drag ended
+                    draggingLines.style.display = "none";
+                    //log.info("Ended on row: " + row + " and column: " + col);
+                    if (isValidConfig(shipLength, board, startRow, startCol, direction)) {
+                        cellClicked(startRow, startCol, board, direction, phase);
+                    }
                 }
             }
-            else if (type === "touchend" || type === "touchcancel" || type === "touchleave" || type === "mouseup") {
-                // drag ended
-                draggingLines.style.display = "none";
-                //log.info("Ended on row: " + row + " and column: " + col);
-                if (isValidConfig(shipLength, board, startRow, startCol, direction)) {
-                    cellClicked(startRow, startCol, board, direction, phase);
+            else {
+                if (type === "touchend" || type === "touchcancel" || type === "touchleave" || type === "mouseup") {
+                    // drag ended
+                    draggingLines.style.display = "none";
+                    cellClicked(row, col, board, direction, phase);
                 }
-            }
-        }
-        else {
-            if (type === "touchend" || type === "touchcancel" || type === "touchleave" || type === "mouseup") {
-                // drag ended
-                draggingLines.style.display = "none";
-                cellClicked(row, col, board, direction, phase);
             }
         }
     }
@@ -251,9 +253,9 @@ var game;
         $rootScope.$apply(function () {
             log.info("Animation ended");
             animationEnded = true;
-            if (isComputerTurn) {
-                sendComputerMove();
-            }
+            // if (isComputerTurn) {
+            //   sendComputerMove();
+            // }
         });
     }
     function sendComputerMove() {
@@ -272,18 +274,20 @@ var game;
         // Is it the computer's turn?
         isComputerTurn = canMakeMove &&
             params.playersInfo[params.yourPlayerIndex].playerId === '';
+        log.info("Is computer turn?", isComputerTurn);
         if (isComputerTurn) {
             // To make sure the player won't click something and send a move instead of the computer sending a move.
             canMakeMove = false;
             // We calculate the AI move only after the animation finishes,
             // because if we call aiService now
             // then the animation will be paused until the javascript finishes.
-            if (!state.delta) {
-                // This is the first move in the match, so
-                // there is not going to be an animation, so
-                // call sendComputerMove() now (can happen in ?onlyAIs mode)
-                sendComputerMove();
-            }
+            // if (!state.delta || params.stateBeforeMove.board.phase < 10) {
+            //   // This is the first move in the match, so
+            //   // there is not going to be an animation, so
+            //   // call sendComputerMove() now (can happen in ?onlyAIs mode)
+            //   sendComputerMove();
+            // }
+            sendComputerMove();
         }
         if (state != null) {
             if (gameLogic.getGamePhase(state.board) > 0) {
@@ -352,8 +356,6 @@ angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
         RULES_SLIDE1: "First, you and your opponent place your 5 battleships on your own board.",
         RULES_SLIDE2: "You and your opponent then take turns to fire upon the enemy board. If you hit an enemy battleship, you will score a X. If you miss, you will score a O.",
         RULES_SLIDE3: "The first player to eliminate all opposing battleships is declared the winner.",
-        // RULES_SLIDE1: "You and your opponent take turns to mark the grid in an empty spot. The first mark is X, then O, then X, then O, etc.",
-        // RULES_SLIDE2: "The first to mark a whole row, column or diagonal wins.",
         CLOSE: "Close"
     });
     game.init();

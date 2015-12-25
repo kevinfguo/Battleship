@@ -65,26 +65,6 @@ module gameLogic {
             ['','','','','','','','','',''],
             ['','','','','','','','','',''],
             ['','','','','','','','','','']]
-            // [['X','','','','','','','','',''],
-            // ['X','','','','','','','X','X','X'],
-            // ['X','','','','','','','','',''],
-            // ['X','','','','','','','','',''],
-            // ['X','','','','','','','','',''],
-            // ['','','X','X','X','','','','',''],
-            // ['','X','','','','','','','',''],
-            // ['','X','','','','','','','',''],
-            // ['','X','','','','','','','X',''],
-            // ['','X','','','','','','','X','']],
-            // [['','','','','','X','','','',''],
-            // ['X','','','','','X','','','',''],
-            // ['X','','','','','X','','','',''],
-            // ['X','','','','','','','','',''],
-            // ['X','','','','','','','','',''],
-            // ['X','','','','','','','','',''],
-            // ['','','','','','X','X','X','',''],
-            // ['','','','','','','','','',''],
-            // ['X','X','X','X','','','','','',''],
-            // ['','','','','','','','','X','X']]
           ],
         "phase":0};
   }
@@ -105,40 +85,6 @@ module gameLogic {
     }
   }
 
-  /**
-   * Returns true if the game ended in a tie because there are no empty cells.
-   * E.g., isTie returns true for the following board:
-   *     [['X', 'O', 'X'],
-   *      ['X', 'O', 'O'],
-   *      ['O', 'X', 'X']]
-   */
-  // There is no such thing as a "tie" in Battleship!
-  // function isTie(board: Board, turnIndexBeforeMove: number): boolean {
-  //   for (var i = 0; i < 3; i++) {
-  //     for (var j = 0; j < 3; j++) {
-  //       if (board[i][j] === '') {
-  //         // If there is an empty cell then we do not have a tie.
-  //         return false;
-  //       }
-  //     }
-  //   }
-  //   // No empty cells, so we have a tie!
-  //   return true;
-  // }
-
-  /**
-   * Return the winner (either 'X' or 'O') or '' if there is no winner.
-   * The board is a matrix of size 3x3 containing either 'X', 'O', or ''.
-   * E.g., getWinner returns 'X' for the following board:
-   *     [['X', 'O', ''],
-   *      ['X', 'O', ''],
-   *      ['X', '', '']]
-   * Return the winner (either P1 or P2) or '' if there is no winner.
-   * The board is composed of 4 10x10 matrices, 2 containing either 'X' or
-   * "O", or ''. The other 2 contain locations of ships marked by 'X'.
-   * Retruns the player for which there are 'X' on all spaces of the opposing
-   * player's ships
-   */
   function getWinner(board: Board, turnIndexBeforeMove: number): string {
     var P1 = true;
     var P2 = true;
@@ -183,18 +129,22 @@ module gameLogic {
       var boardAfterMove = angular.copy(board);
       var firstOperation: IOperation = {setTurn: {turnIndex: 0}};
       var delta: BoardDelta = {row: row, col: col, direction: direction};
+      //Right
       if (direction == 0){
         for (var i = 0; i < getShipLength(board.phase); i++){
           boardAfterMove.gameBoard[2+turnIndexBeforeMove][row][col+i] = 'X';
         }
+      //Down
       }else if (direction == 1){
         for (var i = 0; i < getShipLength(board.phase); i++){
           boardAfterMove.gameBoard[2+turnIndexBeforeMove][row+i][col] = 'X';
         }
+      //Left
       }else if (direction == 2){
         for (var i = 0; i < getShipLength(board.phase); i++){
           boardAfterMove.gameBoard[2+turnIndexBeforeMove][row][col-i] = 'X';
         }
+      //Up
       }else if (direction == 3){
         for (var i = 0; i < getShipLength(board.phase); i++){
           boardAfterMove.gameBoard[2+turnIndexBeforeMove][row-i][col] = 'X';
@@ -211,21 +161,54 @@ module gameLogic {
       var boardAfterMove = angular.copy(board);
       var firstOperation: IOperation = {setTurn: {turnIndex: 1}};
       var delta: BoardDelta = {row: row, col: col, direction: direction};
+      var clean : boolean = true;
       if (direction == 0){
         for (var i = 0; i < getShipLength(board.phase); i++){
-          boardAfterMove.gameBoard[2+turnIndexBeforeMove][row][col+i] = 'X';
+          if (boardAfterMove.gameBoard[2+turnIndexBeforeMove][row][col+i] == 'X'){
+            throw new Error("A ship is already here!");
+            clean = false;
+          }
+        }
+        if (clean){
+          for (var i = 0; i < getShipLength(board.phase); i++){
+            boardAfterMove.gameBoard[2+turnIndexBeforeMove][row][col+i] = 'X';
+          }
         }
       }else if (direction == 1){
         for (var i = 0; i < getShipLength(board.phase); i++){
-          boardAfterMove.gameBoard[2+turnIndexBeforeMove][row+i][col] = 'X';
+          if (boardAfterMove.gameBoard[2+turnIndexBeforeMove][row+i][col] == 'X'){
+            throw new Error("A ship is already here!");
+            clean = false;
+          }
+        }
+        if (clean){
+          for (var i = 0; i < getShipLength(board.phase); i++){
+            boardAfterMove.gameBoard[2+turnIndexBeforeMove][row+i][col] = 'X';
+          }
         }
       }else if (direction == 2){
         for (var i = 0; i < getShipLength(board.phase); i++){
-          boardAfterMove.gameBoard[2+turnIndexBeforeMove][row][col-i] = 'X';
+          if (boardAfterMove.gameBoard[2+turnIndexBeforeMove][row][col-i] == 'X'){
+            throw new Error("A ship is already here!");
+            clean = false;
+          }
+        }
+        if (clean){
+          for (var i = 0; i < getShipLength(board.phase); i++){
+            boardAfterMove.gameBoard[2+turnIndexBeforeMove][row][col-i] = 'X';
+          }
         }
       }else if (direction == 3){
         for (var i = 0; i < getShipLength(board.phase); i++){
-          boardAfterMove.gameBoard[2+turnIndexBeforeMove][row-i][col] = 'X';
+          if (boardAfterMove.gameBoard[2+turnIndexBeforeMove][row-i][col] == 'X'){
+            throw new Error("A ship is already here!");
+            clean = false;
+          }
+        }
+        if (clean){
+          for (var i = 0; i < getShipLength(board.phase); i++){
+            boardAfterMove.gameBoard[2+turnIndexBeforeMove][row-i][col] = 'X';
+          }
         }
       }
       boardAfterMove.phase = board.phase + 1;
@@ -252,6 +235,7 @@ module gameLogic {
       var firstOperation: IOperation;
       if (winner !== '') {
         // Game over.
+        log.info("Game over! Winner is: ", winner);
         firstOperation = {endMatch: {endMatchScores:
           winner === 'P1' ? [1, 0] : [0, 1]}};
       } else {
