@@ -352,9 +352,10 @@ angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
     $rootScope['game'] = game;
     translate.setLanguage('en', {
         RULES_OF_BATTLESHIP: "Rules of Battleship",
-        RULES_SLIDE1: "First, you and your opponent place your 5 battleships on your own board.",
-        RULES_SLIDE2: "You and your opponent then take turns to fire upon the enemy board. If you hit an enemy battleship, you will score a X. If you miss, you will score a O.",
-        RULES_SLIDE3: "The first player to eliminate all opposing battleships is declared the winner.",
+        RULES_SLIDE1: "Welcome to Battleship! Let's get started! The game of Battleship is composed of two phases:",
+        RULES_SLIDE2: "In the first phase, you and your opponent place your 5 battleships on your own board. You will place a 5 cell ship, a 4 cell ship, two 3 cell ships and one 2 cell ship.",
+        RULES_SLIDE3: "In the second phase, You and your opponent then take turns to fire upon the enemy board. If you hit an enemy battleship, you will score a X. If you miss, you will score a O.",
+        RULES_SLIDE4: "The first player to eliminate all opposing battleships is declared the winner!",
         CLOSE: "Close"
     });
     game.init();

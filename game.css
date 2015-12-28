@@ -11,19 +11,20 @@
   border-top: 4pt solid black;
 }
 
-.player1Board{
-  margin-right: 10px;
+.boards{
+  border-style: solid; border-color:#000080;
+  border-width: 4pt;
 }
 
 #playerBoard_1{
-  margin-right: 10px;
+  border-right:
 }
 
-.battleship{
+.battleship {
   background-color: grey;
 }
 
-.sea{
+.sea {
   background-color: #89CFF0;
 }
 
@@ -33,10 +34,6 @@
 	-ms-animation: slowlyAppear 0.5s linear;
 	-o-animation: slowlyAppear 0.5s linear;
 	animation: slowlyAppear 0.5s linear;
-}
-
-#playerBoard_1{
-  padding-right: 10px;
 }
 
 @-webkit-keyframes slowlyAppear {
