@@ -556,7 +556,6 @@ var gameLogic;
         // Is it the computer's turn?
         isComputerTurn = canMakeMove &&
             params.playersInfo[params.yourPlayerIndex].playerId === '';
-        log.info("Is computer turn?", isComputerTurn);
         if (isComputerTurn) {
             // To make sure the player won't click something and send a move instead of the computer sending a move.
             canMakeMove = false;
